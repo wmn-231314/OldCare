@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="14954ca1-fd81-4545-8981-a1c4d172ddd9" name="默认变更列表" comment="创建了一个后端框架">
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/oldCare-server.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/oldCare-server.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -22,6 +23,9 @@
       <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
     </file-type-list>
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="ProjectId" id="2BTHMRvcxKxMZhPvSTG5N4BcuPO" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -31,8 +35,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
@@ -42,9 +45,9 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
+      <option name="SDK_HOME" value="D:\SoftwareEngineering\python\python2.7.18\2.7.18\python.exe" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
@@ -57,7 +60,10 @@
       <method v="2" />
     </configuration>
   </component>
-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
+  <component name="SpellCheckerSettings" BundledDictionaries="0" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" Dictionaries="0" CorrectionsLimit="5" DefaultDictionary="应用程序级" UseSingleDictionary="true" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="默认任务">
       <changelist id="14954ca1-fd81-4545-8981-a1c4d172ddd9" name="默认变更列表" comment="" />
@@ -86,9 +92,32 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="创建了一个后端框架" />
     <option name="LAST_COMMIT_MESSAGE" value="创建了一个后端框架" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="96" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1656926991736">
+      <screen x="0" y="0" width="1280" height="689" />
+    </state>
+    <state x="96" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1280.689@0.0.1280.689" timestamp="1656926991736" />
+    <state width="1259" height="166" key="GridCell.Tab.0.bottom" timestamp="1656927301659">
+      <screen x="0" y="0" width="1280" height="689" />
+    </state>
+    <state width="1259" height="166" key="GridCell.Tab.0.bottom/0.0.1280.689@0.0.1280.689" timestamp="1656927301659" />
+    <state width="1259" height="166" key="GridCell.Tab.0.center" timestamp="1656927301659">
+      <screen x="0" y="0" width="1280" height="689" />
+    </state>
+    <state width="1259" height="166" key="GridCell.Tab.0.center/0.0.1280.689@0.0.1280.689" timestamp="1656927301659" />
+    <state width="1259" height="166" key="GridCell.Tab.0.left" timestamp="1656927301659">
+      <screen x="0" y="0" width="1280" height="689" />
+    </state>
+    <state width="1259" height="166" key="GridCell.Tab.0.left/0.0.1280.689@0.0.1280.689" timestamp="1656927301659" />
+    <state width="1259" height="166" key="GridCell.Tab.0.right" timestamp="1656927301659">
+      <screen x="0" y="0" width="1280" height="689" />
+    </state>
+    <state width="1259" height="166" key="GridCell.Tab.0.right/0.0.1280.689@0.0.1280.689" timestamp="1656927301659" />
   </component>
 </project>
