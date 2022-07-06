@@ -3,8 +3,8 @@
     <el-container>
       <el-header class="my-header">
         <div class="left">
-          <!-- <img src="../assets/logo.png" alt /> -->
-          <!-- <el-button></el-button> -->
+          <img src="../assets/logo.png" alt /> 
+          <span>智慧养老系统</span>
         </div>
 
         <div class="btn-fullscreen" @click="handleFullScreen">
@@ -117,35 +117,20 @@ body {
 }
 .left img {
   float: left;
-  width: 150px;
+  width: 60px;
   height: 60px;
+}
+.left span{
+  font-weight: 900;
+  font-size: 25px;
 }
 .left {
   margin-left: 15px;
 }
 .btn-fullscreen {
   position: absolute;
-  right: 180px;
+  right: 80px;
   top: 0;
-  /* display: block; */
-  /* float: right; */
 }
-.messages {
-  position: absolute;
-  right: 135px;
-  top: -2px;
-}
-.messages .one i {
-  display: block;
-  position: absolute;
-  right: 6px;
-  top: -1px;
-  font-size: 20px;
-}
-.item {
-  margin-top: 20px;
-}
-.elcard10 {
-  margin: 10px 10px;
-}
+
 </style>
