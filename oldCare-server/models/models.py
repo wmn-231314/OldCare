@@ -1,7 +1,7 @@
 # coding=utf-8
 from app import db
 
-
+# 老人信息表
 class OldPersonInfo(db.Model):
     __tablename__ = 'oldPerson_info'
 
@@ -52,7 +52,7 @@ class OldPersonInfo(db.Model):
             'checkin_date': str(self.checkin_date)
         }
 
-
+# 工作人员信息表
 class EmployeeInfo(db.Model):
     __tablename__ = 'employee_info'
 
@@ -74,7 +74,40 @@ class EmployeeInfo(db.Model):
     UPDATEBY = db.Column(db.Integer)
     REMOVE = db.Column(db.String(1))
 
+# 义工信息表
+class VolunteerInfo(db.Model):
+    __tablename__ = 'volunteer_info'
 
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(50), info='姓名')
+    gender = db.Column(db.String(5), info='性别')
+    phone = db.Column(db.String(50))
+    id_card = db.Column(db.String(50))
+    birthday = db.Column(db.DateTime)
+    checkin_date = db.Column(db.DateTime)
+    checkout_date = db.Column(db.DateTime)
+    imgset_dir = db.Column(db.String(200))
+    profile_photo = db.Column(db.String(200))
+    DESCRIPTION = db.Column(db.String(200))
+    ISACTIVE = db.Column(db.String(10))
+    CREATED = db.Column(db.DateTime)
+    CREATEBY = db.Column(db.Integer)
+    UPDATED = db.Column(db.DateTime)
+    UPDATEBY = db.Column(db.Integer)
+    REMOVE = db.Column(db.String(1))
+
+    def to_json(self):
+        return {
+            # 'id': self.ID,
+            'userName': self.name,
+            'photo': self.profile_photo,
+            'id_card': self.id_card,
+            'gender': self.gender,
+            'phone': self.phone,
+            'is_active': self.ISACTIVE
+        }
+
+# 事件表
 class EventInfo(db.Model):
     __tablename__ = 'event_info'
 
@@ -104,7 +137,7 @@ class EventInfo(db.Model):
             "event_image_dir": self.event_image_dir
         }
 
-
+# 系统管理员表
 class SysUser(db.Model):
     __tablename__ = 'sys_user'
 
@@ -136,37 +169,4 @@ class SysUser(db.Model):
             'id': self.ID,
             'userName': self.UserName,
             'password': self.Password
-        }
-
-
-class VolunteerInfo(db.Model):
-    __tablename__ = 'volunteer_info'
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(50), info='姓名')
-    gender = db.Column(db.String(5), info='性别')
-    phone = db.Column(db.String(50))
-    id_card = db.Column(db.String(50))
-    birthday = db.Column(db.DateTime)
-    checkin_date = db.Column(db.DateTime)
-    checkout_date = db.Column(db.DateTime)
-    imgset_dir = db.Column(db.String(200))
-    profile_photo = db.Column(db.String(200))
-    DESCRIPTION = db.Column(db.String(200))
-    ISACTIVE = db.Column(db.String(10))
-    CREATED = db.Column(db.DateTime)
-    CREATEBY = db.Column(db.Integer)
-    UPDATED = db.Column(db.DateTime)
-    UPDATEBY = db.Column(db.Integer)
-    REMOVE = db.Column(db.String(1))
-
-    def to_json(self):
-        return {
-            # 'id': self.ID,
-            'userName': self.name,
-            'photo': self.profile_photo,
-            'id_card': self.id_card,
-            'gender': self.gender,
-            'phone': self.phone,
-            'is_active': self.ISACTIVE
         }
