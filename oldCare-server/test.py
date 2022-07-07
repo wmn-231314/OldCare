@@ -20,5 +20,12 @@ body = \
 
     }
 
-r = requests.post("http://127.0.0.1:9656/login", headers=headers, json=body)
-print r.text
+# r = requests.post("http://127.0.0.1:9656/login", headers=headers, json=body)
+r = requests.get("http://127.0.0.1:9656/table_oldPerson")
+i=0
+for item in r.json()['data']:
+    print(i)
+    print(item)
+    i=i+1
+
+# print(r.text)
