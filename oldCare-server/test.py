@@ -15,10 +15,11 @@ headers = \
 body = \
     {
 
-        "username": "wju",
-        "password": "4567"
+
 
     }
 
-r = requests.post("http://127.0.0.1:9656/login", headers=headers, json=body)
+r = requests.get("http://127.0.0.1:9656/table1", headers=headers, json=body)
 print r.text
+print r.json()['data'][0]
+print r.json()['data'][1]

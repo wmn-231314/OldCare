@@ -33,7 +33,6 @@ class OldPersonInfo(db.Model):
     UPDATEBY = db.Column(db.Integer)
     REMOVE = db.Column(db.String(1))
 
-    # 调试时输出4实例
     def __repr__(self):
         return {
             'id': self.ID,
@@ -86,10 +85,8 @@ class EventInfo(db.Model):
     oldperson_id = db.Column(db.ForeignKey('oldPerson_info.ID'), index=True)
     event_image_dir = db.Column(db.String(255))
     volunteer_id = db.Column(db.ForeignKey('volunteer_info.id'), index=True)
-
     oldperson = db.relationship('OldPersonInfo', primaryjoin='EventInfo.oldperson_id == OldPersonInfo.ID',
                                 backref='event_info_ibfk_1')
-
     oldperson = db.relationship('VolunteerInfo', primaryjoin='EventInfo.volunteer_id == VolunteerInfo.id',
         backref='event_info_ibfk_2')
 

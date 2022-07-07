@@ -1,4 +1,5 @@
-#-*-coding:UTF-8 -*-
+# coding:UTF-8
+
 from flask import Flask, render_template, request, jsonify, session, Response
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import *
@@ -7,6 +8,7 @@ import base64
 import time
 import json
 import os
+import urllib
 
 
 from response import *
@@ -22,7 +24,6 @@ app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # 查询时会显示原始SQL语句
 app.config['SQLALCHEMY_ECHO'] = True
-
 
 db = SQLAlchemy(app)
 
@@ -44,11 +45,8 @@ def add_sys_usr():
     body = request.json
     sys_usr = SysUser(UserName=body['username'], Password=body['password'])
     db.session.add(sys_usr)
-    print ("add success")
-
-    response = BaseResponse(code=0, msg="Succeed to register")
+    response = BaseResponse(code=200, msg="Succeed to register")
     response = json.dumps(response.__dict__)
-
     return response
 
 
@@ -58,17 +56,16 @@ def login():
     body = request.json
     user_name = body['username']
     password = body['password']
-
     for result in SysUser.query.filter_by(UserName=user_name).all():
         if password == result.to_json()['password']:
             session['sys_user_id'] = result.to_json()['id']
             session['sys_user_name'] = result.to_json()['userName']
-            response = BaseResponse(code=0, msg="Match")
+            response = BaseResponse(code=200, msg="Succeed to login")
             response = json.dumps(response.__dict__)
             return response
         else:
             continue
-    response = BaseResponse(code=-1, msg="Not match")
+    response = BaseResponse(code=400, msg="Fail to login")
     response = json.dumps(response.__dict__)
     return response
 
@@ -96,14 +93,12 @@ def get_old_person_info():
     for result in db.session.execute(sql):
         with open(result[1], 'rb') as f:
             data = f.read()
-            encode_str = "data:image/jpg;base64," + str(base64.b64encode(data), 'utf-8')
+            encode_str = "data:image/jpg;base64," + str(base64.b64encode(data).encode('utf-8'))
             result_dict = {'userName': result[0], 'photo': encode_str, 'id_card': str(result[2]),
                            'gender': result[3], 'room_num': result[4], 'checkin_date': str(result[5])}
             result_list.append(result_dict)
-
-    response = DataResponse(code=0, data=result_list, msg='Succeed to select all old persons!')
+    response = DataResponse(code=200, data=result_list, msg='Succeed to select all old persons')
     response = json.dumps(response.__dict__)
-
     return response
 
 
@@ -114,11 +109,8 @@ def add_old_person_info():
     current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     old_person = OldPersonInfo(username=body['username'], gender=body['gender'], CREATED=current_time)
     db.session.add(old_person)
-    db.session.commit()
-
-    response = BaseResponse(code=0, msg='Succeed to insert one old person!')
+    response = BaseResponse(code=200, msg='Succeed to insert one old person')
     response = json.dumps(response.__dict__)
-
     return response
 
 
@@ -129,10 +121,8 @@ def delete_old_person():
     old_person = OldPersonInfo(ID=body['id'], username=body['username'])
     db.session.delete(old_person)
     db.session.commit()
-
-    response = BaseResponse(code=0, msg="Succeed to delete one old person!")
+    response = BaseResponse(code=200, msg="Succeed to delete one old person")
     response = json.dumps(response.__dict__)
-
     return response
 
 
@@ -144,7 +134,7 @@ def update_old_person():
     OldPersonInfo.query.filter_by(ID=body['id']).update({'username': body['userName'], 'UPDATED': current_time})
     db.session.commit()
 
-    response = BaseResponse(code=0, msg="Succeed to update old person!")
+    response = BaseResponse(code=200, msg="Succeed to update old person!")
     response = json.dumps(response.__dict__)
 
     return response
@@ -163,7 +153,7 @@ def get_volunteer():
                            'gender': result[3], 'phone': result[4], 'is_active': str(result[5])}
         result_list.append(result_dict)
 
-    response = DataResponse(code=0, data=result_list, msg='Succeed to select all old persons!')
+    response = DataResponse(code=200, data=result_list, msg='Succeed to select all old persons!')
     response = json.dumps(response.__dict__)
 
     return response
@@ -178,7 +168,7 @@ def add_volunteer():
     db.session.add(volunteer)
     db.session.commit()
 
-    response = BaseResponse(code=0, msg="Succeed to insert one volunteer!")
+    response = BaseResponse(code=200, msg="Succeed to insert one volunteer!")
     response = json.dumps(response.__dict__)
 
     return response
@@ -192,7 +182,7 @@ def get_events():
     for result in EventInfo.query.filter_by(event_type=body['eventType']).all():
         result_list.append(result.to_json())
 
-    response = DataResponse(code=0, data=result_list, msg='Succeed to get specific events!')
+    response = DataResponse(code=200, data=result_list, msg='Succeed to get specific events!')
     response = json.dumps(response.__dict__)
 
     return response
