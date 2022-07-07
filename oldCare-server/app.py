@@ -2,8 +2,8 @@
 
 from flask import Flask, render_template, request, jsonify, session, Response
 from flask_sqlalchemy import SQLAlchemy
-from flask_cors import *
-from imutils import paths
+from flask_siwadoc import SiwaDoc
+from pydantic import BaseModel, Field
 import base64
 import time
 import json
@@ -18,7 +18,7 @@ from models.models import *
 # template_folder 指定模板路径，以便 render_template 能正确渲染 index.html
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'old_care_flask'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root@localhost:3306/old_care_flask'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:63637072@localhost:3306/old_care_flask'
 # 每次请求结束后会自动提交数据库中的改动
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
@@ -27,7 +27,8 @@ app.config['SQLALCHEMY_ECHO'] = True
 
 db = SQLAlchemy(app)
 
-
+#将Flask实例传入SiwaDoc的构造方法初始化SiwaDoc
+siwa = SiwaDoc(app)
 
 
 @app.route("/")
@@ -38,9 +39,14 @@ def root():
     """
     return render_template('Index.html')
 
+# 添加系统管理员请求体
+class AddSystemUserModel(BaseModel):
+    username:str
+    password:str
 
-# sys_user register
+# 系统管理员注册部分 即添加
 @app.route('/register', methods=['POST'])
+@siwa.doc(body=AddSystemUserModel,group="Test",tags="a")
 def add_sys_usr():
     body = request.json
     sys_usr = SysUser(UserName=body['username'], Password=body['password'])
@@ -50,8 +56,9 @@ def add_sys_usr():
     return response
 
 
-# sys_user login
+# 系统管理员登录逻辑处理
 @app.route('/login', methods=['POST'])
+@siwa.doc(group="Test",tags="b")
 def login():
     body = request.json
     user_name = body['username']
@@ -70,23 +77,14 @@ def login():
     return response
 
 
-
-@app.route('/test', methods=['GET'])
-def test():
-    if request.method == "GET":
-
-        # username = request.args.get("account")
-        password = "aaa"  # query_account(username)
-        if password == "":
-            return "no result"
-        else:
-            # return render_template("home.html",message=username,password=password)
-            return jsonify({"password": password})
+class tableOfOlderPersonModel(BaseModel):
+    result_dict:dict
+    result_list:list
 
 
-
-# select old person
-@app.route('/table1', methods=['GET'])
+# 获取所有老人信息
+@app.route('/table_oldPerson', methods=['GET'])
+@siwa.doc(resp=tableOfOlderPersonModel)
 def get_old_person_info():
     result_list = []
     sql = 'SELECT username, profile_photo, id_card, gender, room_number, checkin_date FROM oldPerson_info'
@@ -102,8 +100,9 @@ def get_old_person_info():
     return response
 
 
-# insert old person
+# 添加老人信息
 @app.route('/addOldPersonInfo', methods=['POST'])
+@siwa.doc()
 def add_old_person_info():
     body = request.json
     current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -114,8 +113,9 @@ def add_old_person_info():
     return response
 
 
-# delete old person
+# 删除老人信息
 @app.route('/deleteOldPerson', methods=['POST'])
+@siwa.doc()
 def delete_old_person():
     body = request.json
     old_person = OldPersonInfo(ID=body['id'], username=body['username'])
@@ -126,8 +126,9 @@ def delete_old_person():
     return response
 
 
-# update old person
+# 修改老人信息
 @app.route('/updateOldPerson', methods=['POST'])
+@siwa.doc()
 def update_old_person():
     body = request.json
     current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -140,8 +141,9 @@ def update_old_person():
     return response
 
 
-# select volunteer
-@app.route('/table2', methods=['GET'])
+# 获取所有志愿者信息
+@app.route('/table_volunteer', methods=['GET'])
+@siwa.doc()
 def get_volunteer():
     result_list = []
     sql = "SELECT `name`, profile_photo, id_card, gender, phone, ISACTIVE FROM volunteer_info"
@@ -159,8 +161,9 @@ def get_volunteer():
     return response
 
 
-# insert volunteer
+# 添加一个新的志愿者
 @app.route('/addVolunteer', methods=['POST'])
+@siwa.doc()
 def add_volunteer():
     body = request.json
     current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -174,8 +177,9 @@ def add_volunteer():
     return response
 
 
-# select events
-@app.route('/getEvent', methods=['GET'])
+# 获取某种类型事件发生的所有记录
+@app.route('/table_events', methods=['GET'])
+@siwa.doc()
 def get_events():
     body = request.json
     result_list = []
@@ -187,8 +191,9 @@ def get_events():
 
     return response
 
-# insert event
+# 添加一条事件记录
 @app.route('/addEvent', methods=['POST'])
+@siwa.doc()
 def add_event():
     body = request.json
 
@@ -196,21 +201,21 @@ def add_event():
 
     # event = EventInfo()
 
-    # stranger detection OR prohibit area intrusion detection
+    # 陌生人检测或禁止区域入侵检测（事件类型，事件发生事件，事件发生地点，事件描述，捕捉到的图像）
     if body['eventType'] == 2 or body['eventType'] == 4:
         event = EventInfo(event_type=body['eventType'], event_date=current_time, event_location=body['eventLocation'],
                           event_desc=body['eventDesc'], event_image_dir=body['eventImageDir'])
-    # fall detection
+    # 摔倒检测（事件类型，事件发生事件，事件发生地点，事件描述，捕捉到的图像）
     elif body['eventType'] == 3:
         event = EventInfo(event_type=body['eventType'], event_date=current_time,
                           event_location=body['eventLocation'], event_desc=body['eventDesc'],
                           event_image_dir=body['eventImageDir'])
-    # facial expression detection
+    # 情感检测（事件类型，事件发生事件，事件发生地点，事件描述，老人的ID，捕捉到的图像）
     elif body['eventType'] == 0:
         event = EventInfo(event_type=body['eventType'], event_date=current_time, event_location=body['eventLocation'],
                           event_desc=body['eventDesc'], oldperson_id=body['oldPersonId'],
                           event_image_dir=body['eventImageDir'])
-    # interaction detection
+    # 老人与护工交互检测（事件类型，事件发生事件，事件发生地点，事件描述，老人的ID，志愿者的ID，捕捉到的图像）
     elif body['eventType'] == 1:
         event = EventInfo(event_type=body['eventType'], event_date=current_time, event_location=body['eventLocation'],
                           event_desc=body['eventDesc'], oldperson_id=body['oldPersonId'],
