@@ -4,10 +4,10 @@
     <!-- <h2 style="margin:30px 0 0 30px;">Hello!</h2> -->
     <div class="title">
         <img src="../assets/logo1.png"/>
-        <span style="margin-top: 18px; font-size: 18px;">欢迎登陆智慧养老系统</span>
+        <span style="margin-top: 20px; font-size: 20px;">智慧养老系统</span>
     </div>
     <div class="login-box">
-      <el-form :model="userInfo" ref="userInfo" label-width="0px" class="content">
+      <el-form :model="userInfo" :rules="rules" ref="userInfo" label-width="0px" class="content">
         <el-form-item prop="username">
           <el-input v-model="userInfo.username" placeholder="用户名" prefix-icon="el-icon-user">
           </el-input>
@@ -40,6 +40,17 @@ export default {
             userInfo: {
                 username:"",
                 password:""
+            },
+
+            rules: {
+              username: [
+                { required: true, message: "请输入用户名", trigger: "blur" },
+                { max: 10, message: "不能大于10个字符", trigger: "blur" }
+              ],
+              password: [
+                { required: true, message: "请输入密码", trigger: "blur" },
+                { max: 10, message: "不能大于10个字符", trigger: "blur" }
+              ]
             }
         }
     },
@@ -83,11 +94,10 @@ export default {
     width: 100%;
     height: 100%;
     background: url("../assets/bgPic1.png") no-repeat;
-    /*设置图片适应整个页面*/
+    /*设置图片适应*/
     background-position: left;
     background-size: 75% 100%;
     background-attachment:fixed;
-    /* opacity:0.6; */
 }
 
 .title{
@@ -99,7 +109,7 @@ export default {
 img{
     width: 60px;
     height: 60px;
-    margin: 0;
+    margin-top: -6px;
     padding: 0;
     vertical-align: middle;
 }
