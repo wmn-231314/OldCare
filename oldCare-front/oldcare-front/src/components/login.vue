@@ -1,135 +1,129 @@
 <template>
-  <div :style="height">
-
-    <div class="login">
-      <div class="login-box">
-
-         <el-form :model="loginForm" :rules="rules" ref="loginForm" label-width="0px" class="ms-content">
-                <el-form-item prop="username">
-                    <el-input v-model="loginForm.username" placeholder="用户名" prefix-icon="el-icon-user">
-                    </el-input>
-                </el-form-item>
-                <el-form-item prop="password">
-                    <el-input type="password" placeholder="密码" v-model="loginForm.password" prefix-icon="el-icon-lock">
-                    </el-input>
-                </el-form-item>
-                <div class="login-btn">
-                  <button @click="submitLoginForm('loginForm')">登录</button>
-                  <button @click="faceRecognition()">人脸识别登录</button>
-                </div>
-                <el-link type="primary" @click="register()" style="text-align: center;">去注册 ></el-link>
-            </el-form>
-      </div>
+<div class="container">
+  <div class="login">
+    <!-- <h2 style="margin:30px 0 0 30px;">Hello!</h2> -->
+    <div class="title">
+        <img src="../assets/logo1.png"/>
+        <span style="margin-top: 18px; font-size: 18px;">欢迎登陆智慧养老系统</span>
     </div>
+    <div class="login-box">
+      <el-form :model="userInfo" ref="userInfo" label-width="0px" class="content">
+        <el-form-item prop="username">
+          <el-input v-model="userInfo.username" placeholder="用户名" prefix-icon="el-icon-user">
+          </el-input>
+        </el-form-item>
+        <el-form-item prop="password">
+          <el-input type="password" v-model="userInfo.password" placeholder="请输入密码" prefix-icon="el-icon-lock">
+          </el-input>
+        </el-form-item>
+        <div class="login-btn">
+            <button @click="onsubmit()">账号密码登陆</button>
+        </div>
+        <div class="login-btn">
+            <button @click="faceLogin()">人脸识别登陆</button>
+        </div>
+        <el-link type="primary" @click="register()" style="text-align: center;margin-top: 12px;">注册管理员></el-link>
+      </el-form>   
+    </div>
+    <!-- <el-footer style="text-align: center;">智慧养老系统 created by 小学期小组</el-footer> -->
   </div>
+</div>    
 </template>
 
 <script>
-export default {
-  name: "login",
-  data() {
-    return {
-      loginForm: {
-        password: "",
-        userName: ""
-      },
-      height: {
-        height: ""
-      },
+import router from '../router'
 
-      responseResult: [],
-      rules: {
-        userName: [
-          { required: true, message: "请输入用户名", trigger: "blur" },
-          { max: 10, message: "不能大于10个字符", trigger: "blur" }
-        ],
-        password: [
-          { required: true, message: "请输入密码", trigger: "blur" },
-          { max: 10, message: "不能大于10个字符", trigger: "blur" }
-        ]
-      }
-    };
-  },
-  components: {},
-  created() {
-    this.hh();
-  },
-  inject: ["reload"],
-  methods: {
-    submitLoginForm(loginForm) {
-      let flag = true;
-      this.$store.commit('login',flag);
-      let _this = this;
-       this.$axios
-         .post("/login", {
-           passWord: this.loginForm.password,
-           userName: this.loginForm.userName
-         })
-         .then(res => {
-           if (res.data.code === 200) {
-             this.$router.push({ path: "/home/first" });
-             this.$store.commit("handleUserName", res.data.data.userName);
-             this.$message("登陆成功");
-             this.$router.push({ path: "/home/first" });
-             this.$store.commit("handleUserName", res.data.data.userName);
-             this.$message("登陆成功");
-           }
-         })
-         .catch(err => {
-           this.$message("账号密码有误");
-         });
+export default {
+    name:"Login",
+    data(){
+        return {
+            userInfo: {
+                username:"",
+                password:""
+            }
+        }
     },
-    faceRecognition(){
-      this.$router.push({ path: "/register" });
-    },
-    register() {
-      this.$router.push({ path: "/register" });
-    },
-    hh() {
-      this.height.height = window.innerHeight + "px";
+    methods:{
+        onsubmit(){
+            let _this = this
+            this.$axios.post(url,  //url代填
+            {
+                username:this.username,
+                password:this.password
+            }).then(function (response){
+                let res = response.data
+                if(res.status !== 'Success'){
+                    _this.$notify({
+                        type:'negative',
+                        message:'Login error: ' + res.message
+                    })
+                }else{
+                    sessionStorage.setItem('loggedIn',_this.username)
+                    sessionStorage.setItem('user_id',res.user_id)
+                    _this.$router.push('/home')
+                }
+            }).catch(function (error){
+                console.log(error)
+            })
+        },
+        faceLogin(){
+            this.$router.push('/faceRecognition')
+        },
+        register(){
+            this.$router.push('/register')
+        }
+
     }
-  }
-};
+}
 </script>
 
 <style scoped>
-body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-  /* background: url(./../assets/loginbg.jpg) no-repeat;
-		background-size: 100% 100%; */
-  /* background: linear-gradient(91deg, #f1eefc, #9dc6ff 70%, #a5bcff); */
-}
-.login {
-  width: 100%;
-  height: 100%;
-  /* background: linear-gradient(91deg, #f1eefc, #9dc6ff 70%, #a5bcff); */
-  background-color: #112;
-
+.container{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: url("../assets/bgPic1.png") no-repeat;
+    /*设置图片适应整个页面*/
+    background-position: left;
+    background-size: 75% 100%;
+    background-attachment:fixed;
+    /* opacity:0.6; */
 }
 
-.login-box {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 350px;
-  height:300px;
-  margin: -190px 0 0 -175px;
-  border-radius: 5px;
-  background: rgba(86, 117, 143, 0.425);
-  overflow: hidden;
+.title{
+    margin-top: 8px;
+    margin-left: 22px;
+    padding: 0;
 }
 
-
-.login-box .login-button {
-  margin-top: 10px;
-  width: 320px;
+img{
+    width: 60px;
+    height: 60px;
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
 }
 
-.ms-content {
+.login{
+    position:absolute;
+    left:76%;
+    top:45%;
+    width: 320px;
+    height: 400px;
+    margin: -190px 0 0 -155px;
+    border-radius: 5px;
+    /* background: rgba(172, 203, 230, 0.607); */
+    overflow: hidden;
+    opacity:1;
+}
+
+.content {
+    margin-top: -20px;
     padding: 30px 30px;
+}
+
+input{
+    background-color: rgb(230, 235, 235);
 }
 
 .login-btn {
@@ -137,28 +131,19 @@ body {
    position: center
 }
 .login-btn button{
-  color:white;
-  height: 40px;
-  width: 70px;
-  border: none;
-  border-radius: 5px;
-  background: rgb(90, 179, 251);
+  color:rgb(89, 88, 88);
+  height: 36px;
+  width: 160px;
+  margin-bottom: 12px;
+  border: solid 1px;
+  border-color: rgb(90, 179, 251);
+  border-radius: 8px;
+  background: white;
 
 }
 .login-btn button:hover{
-  background: rgb(11, 65, 109);;
-}
-
-
-label {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  padding-left: 0.1em;
-  font-size: 4em;
-  cursor: pointer;
-  transition: all 0.5s cubic-bezier(0.65, 0.05, 0.36, 1);
+  background: rgb(90, 179, 251);
+  color: white;
 }
 
 </style>
