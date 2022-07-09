@@ -7,4 +7,5 @@ Vue.use(ElementUI);
 
 Vue.prototype.$axios=axios;
 
-Vue.prototype.$loginUrl="http://127.0.0.1:9656/login";
+Vue.prototype.$loginIdUrl="https://l4159b2312.imdo.co";
+Vue.prototype.$loginFaceUrl="https://l4159b2312.imdo.co";
