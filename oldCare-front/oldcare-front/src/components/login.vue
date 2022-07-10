@@ -34,7 +34,6 @@
 import router from '../router'
 
 export default {
-    name:"Login",
     data(){
         return {
             userInfo: {
@@ -57,21 +56,22 @@ export default {
     methods:{
         onsubmit(){
             let _this = this
-            this.$axios.post(url,  //url代填
+            this.$axios.post('/login',  //url
             {
-                username:this.username,
-                password:this.password
+                username:this.userInfo.username,
+                password:this.userInfo.password,
+                headers: {
+                    "Access-Control-Allow-Origin": "*",
+                    "Content-Type": "application/json;charset=utf-8"
+                }
             }).then(function (response){
                 let res = response.data
-                if(res.status !== 'Success'){
-                    _this.$notify({
-                        type:'negative',
-                        message:'Login error: ' + res.message
-                    })
-                }else{
-                    sessionStorage.setItem('loggedIn',_this.username)
-                    sessionStorage.setItem('user_id',res.user_id)
+                if(res.code == 200){
+                    alert("登陆成功！")
                     _this.$router.push('/home')
+                }else{
+                    
+                    alert("登陆失败，用户名或密码错误")
                 }
             }).catch(function (error){
                 console.log(error)

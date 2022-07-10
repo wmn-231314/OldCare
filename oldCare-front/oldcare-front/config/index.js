@@ -13,10 +13,10 @@ module.exports = {
     proxyTable: {
       '/api': {
        
-        target: 'http://127.0.0.1:8080/materils_v2.0',
+        target: 'https://l4159b2312.imdo.co',
         changeOrigin: true,//是否允许跨越
         pathRewrite: {
-            '^/api': '/api',//重写,
+            '^/api': '',//重写,
         }
     }
     },

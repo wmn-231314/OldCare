@@ -6,17 +6,17 @@
             <video id="video_cam" autoplay="autoplay"></video>
             <canvas id="canvas"></canvas>
         </div>
+        <button @click="back()">返回账号密码登陆</button>
     </div>
 </template>
 
 <script>
-    import "../api/api";
-    // var imgFace;
+    var imgFace;
     export default{
         name: 'faceLogin',
         mounted(){
             this.camera_open()
-            // this.faceRec()    // 该方法连接后端后测试
+            this.faceRec()    
         },
         methods:{
             camera_open(){
@@ -46,10 +46,8 @@
                         let canvas = document.getElementById('canvas');
                         console.info(canvas);
                         canvas.getContext('2d').drawImage(vio,0,0,640,480);
-                        // console.info(typeof vio);
-                        // console.info(canvas.getContext('2d').drawImage(vio, 0, 0,640, 480));
                         // 得到图片，格式base64
-                        let imgFace = canvas.toDataURL("image/png");
+                        imgFace = canvas.toDataURL("image/png");
                         // imgFace = canvas.subString();
                         console.info(imgFace);
                     },1000
@@ -59,28 +57,31 @@
             faceRec(){
                 this.camera_open()
                 this.$axios({
-                    url:this.$loginFaceUrl,
+                    url:'',  //后端有接口后填写
                     method:'post',
                     Credentials:"include",
                     data:{
-                        photo: imgFace
+                        photo: imgFace // 此处photo根据后端接口名修改
                     },
                     headers: {
-                        // "Access-Control-Allow-Origin": "*",
-                        // "Content-Type": "application/json;charset=utf-8"
+                        "Access-Control-Allow-Origin": "*",
+                        "Content-Type": "application/json;charset=utf-8"
                     }
                 }).then(res => {
-                    if(res.status == 200){
-                        if(res.data.code == 0){
-                            alert("登陆成功，欢迎您")
-                            this.$router.push({path: '/home'})
-                        }else if(res.data.code == -1){
-                            alert("人脸登陆失败")
-                        }
+                    if(res.data.code == 200){                      
+                        alert("登陆成功，欢迎您")
+                        this.$router.push({path: '/home'})    
                     }else{
-                        alert(res.data.msg)
+                        alert("人脸登陆失败")
                     }
+                }).catch(function (error){
+                    console.log(error)
                 })
+            },
+
+            back(){
+                // 关闭摄像头函数待考虑
+                this.$router.push('/login')
             }
 
         }
@@ -102,8 +103,8 @@
 
     #video_cam{
         
-        /* height: 300px;
-        width: 400px; */
+        height: 400px;
+        width: 600px;
         margin-left: 30%;
         margin-top: 5%;
         align-items: center;
@@ -115,6 +116,23 @@
         height: 400px;
         width: 600px;
         display: none;
+    }
+
+    button{
+        color:rgb(89, 88, 88);
+        height: 36px;
+        width: 160px;
+        margin-left: 46%;
+        margin-top: 25px;
+        border: solid 1px;
+        border-color: rgb(90, 179, 251);
+        border-radius: 8px;
+        background: white;
+
+    }
+    button:hover{
+        background: rgb(90, 179, 251);
+        color: white;
     }
 
 </style>
