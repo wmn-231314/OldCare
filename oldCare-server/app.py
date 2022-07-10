@@ -2,8 +2,7 @@
 
 from flask import Flask, render_template, request, jsonify, session, Response
 from flask_sqlalchemy import SQLAlchemy
-from flask_siwadoc import SiwaDoc
-from pydantic import BaseModel, Field
+from flask_cors import *
 import base64
 import time
 import json
@@ -18,17 +17,16 @@ from models.models import *
 # template_folder 指定模板路径，以便 render_template 能正确渲染 index.html
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'old_care_flask'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:63637072@localhost:3306/old_care_flask'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root@localhost:3306/old_care_flask'
 # 每次请求结束后会自动提交数据库中的改动
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # 查询时会显示原始SQL语句
 app.config['SQLALCHEMY_ECHO'] = True
 
+# 设置跨域
+CORS(app, supports_credentials=True)
 db = SQLAlchemy(app)
-
-#将Flask实例传入SiwaDoc的构造方法初始化SiwaDoc
-siwa = SiwaDoc(app)
 
 
 @app.route("/")
@@ -39,14 +37,9 @@ def root():
     """
     return render_template('Index.html')
 
-# 添加系统管理员请求体
-class AddSystemUserModel(BaseModel):
-    username:str
-    password:str
 
 # 系统管理员注册部分 即添加
 @app.route('/register', methods=['POST'])
-@siwa.doc(body=AddSystemUserModel,group="Test",tags="a")
 def add_sys_usr():
     body = request.json
     sys_usr = SysUser(UserName=body['username'], Password=body['password'])
@@ -58,7 +51,6 @@ def add_sys_usr():
 
 # 系统管理员登录逻辑处理
 @app.route('/login', methods=['POST'])
-@siwa.doc(group="Test",tags="b")
 def login():
     body = request.json
     user_name = body['username']
@@ -77,14 +69,9 @@ def login():
     return response
 
 
-class tableOfOlderPersonModel(BaseModel):
-    result_dict:dict
-    result_list:list
-
 
 # 获取所有老人信息
 @app.route('/table_oldPerson', methods=['GET'])
-@siwa.doc(resp=tableOfOlderPersonModel)
 def get_old_person_info():
     result_list = []
     sql = 'SELECT username, profile_photo, id_card, gender, room_number, checkin_date FROM oldPerson_info'
@@ -102,7 +89,6 @@ def get_old_person_info():
 
 # 添加老人信息
 @app.route('/addOldPersonInfo', methods=['POST'])
-@siwa.doc()
 def add_old_person_info():
     body = request.json
     current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -115,7 +101,6 @@ def add_old_person_info():
 
 # 删除老人信息
 @app.route('/deleteOldPerson', methods=['POST'])
-@siwa.doc()
 def delete_old_person():
     body = request.json
     old_person = OldPersonInfo(ID=body['id'], username=body['username'])
@@ -128,7 +113,6 @@ def delete_old_person():
 
 # 修改老人信息
 @app.route('/updateOldPerson', methods=['POST'])
-@siwa.doc()
 def update_old_person():
     body = request.json
     current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -143,7 +127,6 @@ def update_old_person():
 
 # 获取所有志愿者信息
 @app.route('/table_volunteer', methods=['GET'])
-@siwa.doc()
 def get_volunteer():
     result_list = []
     sql = "SELECT `name`, profile_photo, id_card, gender, phone, ISACTIVE FROM volunteer_info"
@@ -163,7 +146,6 @@ def get_volunteer():
 
 # 添加一个新的志愿者
 @app.route('/addVolunteer', methods=['POST'])
-@siwa.doc()
 def add_volunteer():
     body = request.json
     current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -179,7 +161,6 @@ def add_volunteer():
 
 # 获取某种类型事件发生的所有记录
 @app.route('/table_events', methods=['GET'])
-@siwa.doc()
 def get_events():
     body = request.json
     result_list = []
@@ -193,7 +174,6 @@ def get_events():
 
 # 添加一条事件记录
 @app.route('/addEvent', methods=['POST'])
-@siwa.doc()
 def add_event():
     body = request.json
 
@@ -224,10 +204,37 @@ def add_event():
     db.session.add(event)
     db.session.commit()
 
-    response = BaseResponse(code=0, msg='Succeed to add event')
+    response = BaseResponse(code=200, msg='Succeed to add event')
     response = json.dumps(response.__dict__)
 
     return response
+
+
+
+
+# sys user login with face
+@app.route('/loginWithFace', methods=['POST'])
+def login_with_face():
+    body = request.json
+    photo_base64 = body['photo']
+    # print(str(photo_base64))
+    photo_base64 = str(photo_base64).split(',')[1]
+    photo = base64.b64decode(photo_base64)
+    checkingfaceimg = Checkingfaceimg(photo)
+    is_login = checkingfaceimg.check()
+    if len(is_login) == 0:
+        response = BaseResponse(code=-1, msg="Fail to login with face!")
+        response = json.dumps(response.__dict__)
+        return response
+    elif is_login[0] == 'Unknown':
+        response = BaseResponse(code=-1, msg="Fail to login with face!")
+        response = json.dumps(response.__dict__)
+        return response
+    else:
+        response = BaseResponse(code=0, msg="Succeed to login with face!")
+        response = json.dumps(response.__dict__)
+        return response
+
 
 
 
