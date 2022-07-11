@@ -80,8 +80,16 @@
             },
 
             back(){
-                // 关闭摄像头函数待考虑
+                this.beforeDestroy()
                 this.$router.push('/login')
+                location.reload() // 跳转然后刷新页面后实现摄像头关闭
+            },
+            // 关闭摄像头
+            beforeDestroy(){
+                this.closeVideo()
+            },
+            closeVideo(){
+                this.MediaStreamTrack && this.MediaStreamTrack.stop();
             }
 
         }
@@ -122,7 +130,7 @@
         color:rgb(89, 88, 88);
         height: 36px;
         width: 160px;
-        margin-left: 46%;
+        margin-left: 45.5%;
         margin-top: 25px;
         border: solid 1px;
         border-color: rgb(90, 179, 251);
