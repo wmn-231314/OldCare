@@ -67,10 +67,12 @@ export default {
             }).then(function (response){
                 let res = response.data
                 if(res.code == 200){
+                    // token处理
+                    var userinfo = res.data
+                    _this.$store.commit('$_setToken',userinfo.token)
                     alert("登陆成功！")
                     _this.$router.push('/home')
                 }else{
-                    
                     alert("登陆失败，用户名或密码错误")
                 }
             }).catch(function (error){

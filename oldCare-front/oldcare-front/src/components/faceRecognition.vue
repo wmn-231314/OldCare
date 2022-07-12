@@ -96,7 +96,7 @@
     }
 </script>
 
-<style>
+<style scoped>
     * {margin: 0; padding: 0;}
     /* .face{
         width: 100%;
@@ -130,7 +130,7 @@
         color:rgb(89, 88, 88);
         height: 36px;
         width: 160px;
-        margin-left: 45.5%;
+        margin-left: 44.5%;
         margin-top: 25px;
         border: solid 1px;
         border-color: rgb(90, 179, 251);

@@ -22,7 +22,7 @@
             </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item icon="el-icon-user" split-button="true">
-                <span @click="tozhuce">登出</span>
+                <span @click="logOut()">登出</span>
               </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -33,6 +33,8 @@
 </template>
 
 <script>
+import { MessageBox } from 'element-ui';
+
 
 export default {
   name: "headSide",
@@ -51,14 +53,23 @@ export default {
   },
   created() {},
   methods: {
-    tologin() {
-      this.$router.push({ path: "/" });
-    },
-    tozhuce() {
-      let flag = false;
-      this.$store.commit("login", flag);
-      this.$router.push("/");
-      console.log("退出登录");
+    // tologin() {
+    //   this.$router.push({ path: "/" });
+    // },
+    // tozhuce() {
+    //   let flag = false;
+    //   this.$store.commit("login", flag);
+    //   this.$router.push("/");
+    //   console.log("退出登录");
+    // },
+    logOut(){
+      MessageBox.confirm(this.lang.logoutTip).then(action => {
+        this.$store.commit('%_removeStorage')
+        this.$router.push('/login')
+        alert(this.lang.logOutSuccess)
+      }).catch(function (error){
+        console.log(error)
+      })
     },
     handleFullScreen() {
       let element = document.documentElement;

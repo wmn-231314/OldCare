@@ -24,6 +24,7 @@ import olderInformation from '@/page/chart/olderInformation'
 import olderNurse from '@/page/chart/olderNurse'
 // 信息采集页面
 import informationAcquisition from '@/page/view/informationAcquisition'
+import faceInfoCollection from '@/page/view/faceInfoCollection'
 
 
 
@@ -136,6 +137,13 @@ export default new Router({
           component : olderNurse,
           meta: { title: '老人护工交互表' , requireAuth:true}
         },
+        // 人脸信息录入
+        {
+          path: '/home/faceInfoCollection',
+          name: 'faceInfoCollection',
+          component: faceInfoCollection,
+          meta: { title: '人脸信息录入' , requireAuth:true}
+        }
         
       ]
     },
