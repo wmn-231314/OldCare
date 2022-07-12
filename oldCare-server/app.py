@@ -33,7 +33,8 @@ app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
 # 设置跨域
-CORS(app, supports_credentials=True)
+# CORS(app, supports_credentials=True)
+CORS(app, resources=r'/*')
 
 @app.route("/")
 def root():
@@ -74,26 +75,26 @@ def get_homePage_Data():
                          "COUNT(case when event_info.event_desc='surprise' then event_info.event_desc end) as 'surprise' " \
                          "FROM event_info WHERE event_info.event_type=0 AND DATE(event_info.event_date)=CURDATE()"
     sql_number_fall = "SELECT COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 3 DAY) AND CURDATE() then event_info.event_date end) as 'within_four_days', " \
-                      "SELECT COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 4 DAY) AND CURDATE() then event_info.event_date end) as 'within_five_days', " \
-                      "SELECT COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 5 DAY) AND CURDATE() then event_info.event_date end) as 'within_six_days', " \
-                      "SELECT COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 6 DAY) AND CURDATE() then event_info.event_date end) as 'within_seven_days', " \
-                      "SELECT COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 7 DAY) AND CURDATE() then event_info.event_date end) as 'within_eight_days', " \
-                      "SELECT COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 8 DAY) AND CURDATE() then event_info.event_date end) as 'within_nine_days', " \
-                      "SELECT COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 9 DAY) AND CURDATE() then event_info.event_date end) as 'within_ten_days', " \
-                      "SELECT COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 10 DAY) AND CURDATE() then event_info.event_date end) as 'within_eleven_days', "\
-                      "SELECT COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 11 DAY) AND CURDATE() then event_info.event_date end) as 'within_twelve_days', " \
-                      "SELECT COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 12 DAY) AND CURDATE() then event_info.event_date end) as 'within_thirteen_days', " \
+                      "COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 4 DAY) AND CURDATE() then event_info.event_date end) as 'within_five_days', " \
+                      "COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 5 DAY) AND CURDATE() then event_info.event_date end) as 'within_six_days', " \
+                      "COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 6 DAY) AND CURDATE() then event_info.event_date end) as 'within_seven_days', " \
+                      "COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 7 DAY) AND CURDATE() then event_info.event_date end) as 'within_eight_days', " \
+                      "COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 8 DAY) AND CURDATE() then event_info.event_date end) as 'within_nine_days', " \
+                      "COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 9 DAY) AND CURDATE() then event_info.event_date end) as 'within_ten_days', " \
+                      "COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 10 DAY) AND CURDATE() then event_info.event_date end) as 'within_eleven_days', "\
+                      "COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 11 DAY) AND CURDATE() then event_info.event_date end) as 'within_twelve_days', " \
+                      "COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 12 DAY) AND CURDATE() then event_info.event_date end) as 'within_thirteen_days' " \
                       "FROM event_info WHERE event_info.event_type=3"
     sql_number_intrusion = "SELECT COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 3 DAY) AND CURDATE() then event_info.event_date end) as 'within_four_days', " \
-                           "SELECT COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 4 DAY) AND CURDATE() then event_info.event_date end) as 'within_five_days', " \
-                           "SELECT COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 5 DAY) AND CURDATE() then event_info.event_date end) as 'within_six_days', " \
-                           "SELECT COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 6 DAY) AND CURDATE() then event_info.event_date end) as 'within_seven_days', " \
-                           "SELECT COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 7 DAY) AND CURDATE() then event_info.event_date end) as 'within_eight_days', " \
-                           "SELECT COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 8 DAY) AND CURDATE() then event_info.event_date end) as 'within_nine_days', " \
-                           "SELECT COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 9 DAY) AND CURDATE() then event_info.event_date end) as 'within_ten_days', " \
-                           "SELECT COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 10 DAY) AND CURDATE() then event_info.event_date end) as 'within_eleven_days', " \
-                           "SELECT COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 11 DAY) AND CURDATE() then event_info.event_date end) as 'within_twelve_days', " \
-                           "SELECT COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 12 DAY) AND CURDATE() then event_info.event_date end) as 'within_thirteen_days', " \
+                           "COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 4 DAY) AND CURDATE() then event_info.event_date end) as 'within_five_days', " \
+                           "COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 5 DAY) AND CURDATE() then event_info.event_date end) as 'within_six_days', " \
+                           "COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 6 DAY) AND CURDATE() then event_info.event_date end) as 'within_seven_days', " \
+                           "COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 7 DAY) AND CURDATE() then event_info.event_date end) as 'within_eight_days', " \
+                           "COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 8 DAY) AND CURDATE() then event_info.event_date end) as 'within_nine_days', " \
+                           "COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 9 DAY) AND CURDATE() then event_info.event_date end) as 'within_ten_days', " \
+                           "COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 10 DAY) AND CURDATE() then event_info.event_date end) as 'within_eleven_days', " \
+                           "COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 11 DAY) AND CURDATE() then event_info.event_date end) as 'within_twelve_days', " \
+                           "COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 12 DAY) AND CURDATE() then event_info.event_date end) as 'within_thirteen_days' " \
                            "FROM event_info WHERE event_info.event_type=2 OR event_info.event_type=4"
 
 
@@ -165,13 +166,13 @@ def login():
             id=result.ID
             session['sys_user_id'] = result.to_json()['id']
             session['sys_user_name'] = result.to_json()['userName']
-            response = BaseResponse(code=0, msg="Match")
+            response = BaseResponse(code=200, msg="Match")
             response = json.dumps(response.__dict__)
             return response
         else:
             continue
 
-    response = DataResponse(code=-1, data=generate_token(id), msg="Not match")
+    response = DataResponse(code=412, data=generate_token(id), msg="Not match")
     response = json.dumps(response.__dict__)
     return response
 
@@ -184,7 +185,7 @@ def get_old_person_info():
         with open(result[1], 'rb') as f:
             data = f.read()
             encode_str = "data:image/jpg;base64," + str(base64.b64encode(data), 'utf-8')
-            result_dict = {'userName': result[0], 'photo': encode_str, 'id_card': str(result[2]),
+            result_dict = {'username': result[0], 'photo': encode_str, 'id_card': str(result[2]),
                            'gender': result[3], 'room_num': result[4], 'checkin_date': str(result[5])}
             result_list.append(result_dict)
 
@@ -256,7 +257,7 @@ def get_volunteer():
         with open(result[1], 'rb') as f:
             data = f.read()
             encode_str = "data:image/jpg;base64," + str(base64.b64encode(data), 'utf-8')
-            result_dict = {'userName': result[0], 'photo': encode_str, 'id_card': str(result[2]),
+            result_dict = {'username': result[0], 'photo': encode_str, 'id_card': str(result[2]),
                            'gender': result[3], 'phone': result[4], 'is_active': str(result[5])}
         result_list.append(result_dict)
 
@@ -498,12 +499,22 @@ def identify_id_card(photo):
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1', port='9656')
+
+
     # with open(r"C:\Users\seven\Desktop\身份证.jpg","rb") as r:
     #     photo = base64.b64encode(r.read())
     #     result = json.loads(identify_id_card(photo))['cards'][0]
     #     print(result['id_card_number'])
+
+
     # if OldPersonInfo.query.filter_by(phone=13321313711).first():
     #     print(OldPersonInfo.query.filter_by(phone=13321313711).first().ID)
     # else:
     #     print("no")
     # print(generate_token(25))
+
+
+    # sql_number_fall = "SELECT COUNT(case when DATE(event_info.event_date) BETWEEN DATE_SUB(CURDATE(),INTERVAL 3 DAY) AND CURDATE() then event_info.event_date end) as 'within_four_days'" \
+    #                   "FROM event_info WHERE event_info.event_type=3"
+    # number_fall = db.session.execute(sql_number_fall).all()
+    # print(number_fall[0])
