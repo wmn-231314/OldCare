@@ -15,13 +15,13 @@ headers = \
 body = \
     {
 
-        "username": "wju",
-        "password": "4567"
+        "username": "admin",
+        "password": "admin"
 
     }
 
-# r = requests.post("http://127.0.0.1:9656/index.html", headers=headers, json=body)
-r = requests.get("http://127.0.0.1:9656/")
+# r = requests.post("http://127.0.0.1:9656/login", headers=headers, json=body)
+r = requests.get("http://127.0.0.1:9656/homePage_data")
 print(r.text)
 # i=0
 # for item in r.json()['data']:
