@@ -1,13 +1,20 @@
 # -*-coding:UTF-8 -*-
+import random
+import urllib
+
+import jwt
 from flask import Flask, render_template, request, jsonify, session, Response
 from flask_sqlalchemy import SQLAlchemy
-from flask_siwadoc import SiwaDoc
+from flask_cors import *
 from pydantic import BaseModel, Field
 
 import base64
 import time
 import json
 import os
+
+from sqlalchemy.ext.serializer import Serializer
+from werkzeug.utils import redirect
 
 from response import *
 from models.models import *
@@ -25,9 +32,8 @@ app.config['SQLALCHEMY_ECHO'] = True
 
 db = SQLAlchemy(app)
 
-# 将Flask实例传入SiwaDoc的构造方法初始化SiwaDoc
-siwa = SiwaDoc(app)
-
+# 设置跨域
+CORS(app, supports_credentials=True)
 
 @app.route("/")
 def root():
@@ -37,8 +43,20 @@ def root():
     """
     return render_template('Index.html')
 
+# @app.before_request
+# def is_login():
+#     if request.method=="GET":
+#         if request.json['token'] == generate_token(request.json['system_id']):
+#             return None
+#         else:
+#             return render_template('Index.html')
+#     else:
+#         return None
 
-@app.route("/homePage_data", methods=['Get'])
+
+
+
+@app.route("/homePage_data", methods=['GET'])
 def get_homePage_Data():
     sql_number_oldPeople = "SELECT COUNT(*) FROM oldperson_info"
     sql_number_gender = "SELECT COUNT(case when oldperson_info.gender='male' then oldperson_info.gender end) as 'male', " \
@@ -117,14 +135,18 @@ class AddSystemUserModel(BaseModel):
 
 # 系统管理员注册部分 即添加
 @app.route('/register', methods=['POST'])
-@siwa.doc(body=AddSystemUserModel, group="Test", tags="a")
 def add_sys_usr():
     body = request.json
-    sys_usr = SysUser(UserName=body['username'], Password=body['password'], )
-    db.session.add(sys_usr)
-    print("add success")
+    if SysUser.query.filter_by(UserName=body['username']).first():
 
-    response = BaseResponse(code=200, msg="Succeed to register")
+        response = BaseResponse(code=412, msg='The administrator information already exists, cannot be entered repeatedly!')
+
+    else:
+        sys_usr = SysUser(UserName=body['username'], Password=body['password'], )
+        db.session.add(sys_usr)
+        print("add success")
+
+        response = BaseResponse(code=200, msg="Succeed to register")
     response = json.dumps(response.__dict__)
 
     return response
@@ -132,14 +154,15 @@ def add_sys_usr():
 
 # 系统管理员登录逻辑处理
 @app.route('/login', methods=['POST'])
-@siwa.doc(group="Test", tags="b")
 def login():
+    global id,reponse
     body = request.json
     user_name = body['username']
     password = body['password']
 
     for result in SysUser.query.filter_by(UserName=user_name).all():
         if password == result.to_json()['password']:
+            id=result.ID
             session['sys_user_id'] = result.to_json()['id']
             session['sys_user_name'] = result.to_json()['userName']
             response = BaseResponse(code=0, msg="Match")
@@ -147,19 +170,13 @@ def login():
             return response
         else:
             continue
-    response = BaseResponse(code=-1, msg="Not match")
+
+    response = DataResponse(code=-1, data=generate_token(id), msg="Not match")
     response = json.dumps(response.__dict__)
     return response
 
-
-class tableOfOlderPersonModel(BaseModel):
-    result_dict: dict
-    result_list: list
-
-
 # 获取所有老人信息
 @app.route('/table_oldPerson', methods=['GET'])
-@siwa.doc(resp=tableOfOlderPersonModel)
 def get_old_person_info():
     result_list = []
     sql = 'SELECT username, profile_photo, id_card, gender, room_number, checkin_date FROM oldPerson_info'
@@ -179,17 +196,24 @@ def get_old_person_info():
 
 # 添加老人信息
 @app.route('/addOldPersonInfo', methods=['POST'])
-@siwa.doc()
 def add_old_person_info():
     body = request.json
     current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    old_person = OldPersonInfo(username=body['username'], gender=body['gender'], phone=body['phone'],
-                               checkin_date=body['checkin_date'], checkout_date=body['checkout_date'],
-                               CREATED=current_time)
-    db.session.add(old_person)
-    db.session.commit()
+    idCard_info = json.loads(identify_id_card(body['idCard_photo_base64']))['cards'][0]
 
-    response = BaseResponse(code=200, msg='Succeed to insert one old person!')
+    if OldPersonInfo.query.filter_by(id_card=idCard_info['id_card_number']).first():
+
+        response = BaseResponse(code=412, msg='The elderly information already exists, cannot be entered repeatedly!')
+
+    else:
+        old_person = OldPersonInfo(username=idCard_info['name'], gender=idCard_info['gender'], phone=body['phone'],
+                                   id_card=idCard_info['id_card_number'], birthday=idCard_info['birthday'],
+                                   checkin_date=body['checkin_date'],checkout_date=body['checkout_date'], room_number=body['room_number'], CREATED=current_time)
+        db.session.add(old_person)
+        db.session.commit()
+
+        response = BaseResponse(code=200, msg='Succeed to insert one old person!')
+
     response = json.dumps(response.__dict__)
 
     return response
@@ -197,7 +221,6 @@ def add_old_person_info():
 
 # 删除老人信息
 @app.route('/deleteOldPerson', methods=['POST'])
-@siwa.doc()
 def delete_old_person():
     body = request.json
     old_person = OldPersonInfo(ID=body['id'], username=body['username'])
@@ -212,7 +235,6 @@ def delete_old_person():
 
 # 修改老人信息
 @app.route('/updateOldPerson', methods=['POST'])
-@siwa.doc()
 def update_old_person():
     body = request.json
     current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -227,7 +249,6 @@ def update_old_person():
 
 # 获取所有义工信息
 @app.route('/table_volunteer', methods=['GET'])
-@siwa.doc()
 def get_volunteer():
     result_list = []
     sql = "SELECT `name`, profile_photo, id_card, gender, phone, ISACTIVE FROM volunteer_info"
@@ -247,17 +268,23 @@ def get_volunteer():
 
 # 添加一个新的义工
 @app.route('/addVolunteer', methods=['POST'])
-@siwa.doc()
 def add_volunteer():
     body = request.json
     current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    volunteer = VolunteerInfo(name=body['name'], gender=['gender'], phone=body['phone'],
-                              checkin_date=body['checkin_date'], checkout_date=body['checkout_date'],
-                              ISACTIVE=body['isActive'], CREATED=current_time)
-    db.session.add(volunteer)
-    db.session.commit()
+    idCard_info = json.loads(identify_id_card(body['idCard_photo_base64']))['cards'][0]
 
-    response = BaseResponse(code=200, msg="Succeed to insert one volunteer!")
+    if VolunteerInfo.query.filter_by(id_card=idCard_info['id_card_number']).first():
+
+        response = BaseResponse(code=412, msg='The volunteer information already exists, cannot be entered repeatedly!')
+
+    else:
+        volunteer = VolunteerInfo(name=idCard_info['name'], gender=idCard_info['gender'], phone=body['phone'],
+                                  id_card=idCard_info['id_card_number'],birthday=idCard_info['birthday'], checkin_date=body['checkin_date'],
+                                  checkout_date=body['checkout_date'], ISACTIVE=body['isActive'], CREATED=current_time)
+        db.session.add(volunteer)
+        db.session.commit()
+
+        response = BaseResponse(code=200, msg="Succeed to insert one volunteer!")
     response = json.dumps(response.__dict__)
 
     return response
@@ -265,7 +292,6 @@ def add_volunteer():
 
 # 获取某种类型事件发生的所有记录
 @app.route('/table_events', methods=['GET'])
-@siwa.doc()
 def get_events():
     body = request.json
     result_list = []
@@ -364,7 +390,6 @@ def get_interaction():
 
 # 添加一条事件记录
 @app.route('/addEvent', methods=['POST'])
-@siwa.doc()
 def add_event():
     body = request.json
 
@@ -401,6 +426,84 @@ def add_event():
     return response
 
 
+
+
+
+def generate_token(id):
+
+    payload = {
+        'user_id': id
+    }
+    token = jwt.encode(payload=payload, key=app.secret_key, algorithm='HS256')
+    return token
+
+
+
+# 识别身份证信息 （调用Face++旷视API完成）
+
+# 图片要求 ：
+# 图片格式：JPG(JPEG)，PNG
+# 图片像素尺寸：最小48*48像素，最大4096*4096像素。 建议身份证在整张图片中面积占比大于1/10。
+# 图片文件大小：2MB
+
+# 图片数据采用base64编码的二进制图片数据
+def identify_id_card(photo):
+    http_url = 'https://api-cn.faceplusplus.com/cardpp/v1/ocridcard'
+    key = "VfFq28mDLp1hLWXKGXVfNGO8LUKvpTBs"
+    secret = "m1GTqEqGungSNT-J6YIn4MobFsAEOpkL"
+    base64 = photo
+    boundary = '----------%s' % hex(int(time.time() * 1000))
+    data = []
+    data.append('--%s' % boundary)
+    data.append('Content-Disposition: form-data; name="%s"\r\n' % 'api_key')
+    data.append(key)
+    data.append('--%s' % boundary)
+    data.append('Content-Disposition: form-data; name="%s"\r\n' % 'api_secret')
+    data.append(secret)
+    data.append('--%s' % boundary)
+    data.append('Content-Disposition: form-data; name="%s"\r\n' % 'image_base64')
+    data.append(base64)
+    data.append('--%s' % boundary)
+    data.append('Content-Disposition: form-data; name="%s"\r\n' % 'legality')
+    data.append('0')
+    data.append('--%s--\r\n' % boundary)
+
+    # print(data)
+
+    for i, d in enumerate(data):
+        if isinstance(d, str):
+            data[i] = d.encode('utf-8')
+
+    http_body = b'\r\n'.join(data)
+
+    # 创建HTTP请求
+    req = urllib.request.Request(url=http_url, data=http_body)
+
+    # 设置HTTP请求头部
+    req.add_header('Content-Type', 'multipart/form-data; boundary=%s' % boundary)
+
+    try:
+        # 访问目标url
+        resp = urllib.request.urlopen(req, timeout=5)
+        # 获取响应信息
+        qrcont = resp.read()
+        # if you want to load as json, you should decode first,
+        # for example: json.loads(qrount.decode('utf-8'))
+        return qrcont.decode('utf-8')
+    except urllib.error.HTTPError as e:
+        print(e.read().decode('utf-8'))
+
+
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1', port='9656')
-    # get_homePage_Data()
+    # with open(r"C:\Users\seven\Desktop\身份证.jpg","rb") as r:
+    #     photo = base64.b64encode(r.read())
+    #     result = json.loads(identify_id_card(photo))['cards'][0]
+    #     print(result['id_card_number'])
+    # if OldPersonInfo.query.filter_by(phone=13321313711).first():
+    #     print(OldPersonInfo.query.filter_by(phone=13321313711).first().ID)
+    # else:
+    #     print("no")
+    # print(generate_token(25))
