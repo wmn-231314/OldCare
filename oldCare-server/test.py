@@ -20,7 +20,7 @@ body = \
         'password':'admin'
 
     }
-r = requests.post("https://f557r67476.goho.co/login", headers=headers, json=body)
+# r = requests.post("https://f557r67476.goho.co/login", headers=headers, json=body)
 # r = requests.get("http://1.15.63.218/",headers=)
 print(r.text)
 # i=0

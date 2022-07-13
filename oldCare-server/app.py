@@ -1,6 +1,6 @@
 # -*-coding:UTF-8 -*-
 import functools
-import random
+import os
 import sys
 import urllib
 
@@ -11,16 +11,13 @@ from flask import Flask, render_template, request, jsonify, session, Response ,g
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import *
 from pydantic import BaseModel, Field
-from itsdangerous import TimedSerializer as Serializer
 
 import base64
 import time
 import json
-import os
 
-from sqlalchemy.ext.serializer import Serializer
-from werkzeug.utils import redirect
-from models.models import *
+# from models.models import *
+
 from response import *
 
 
@@ -39,8 +36,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # 查询时会显示原始SQL语句
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
-
-
+sys.path.append("/home/ubuntu/oldCare-server/")
+from models.models import OldPersonInfo, VolunteerInfo, EmployeeInfo, EventInfo, SysUser
+sys.path.append(os.pardir)
 
 # 设置跨域
 # CORS(app, supports_credentials=True)
@@ -64,76 +62,49 @@ def root():
     """
     return render_template('index.html')
 
-# @app.before_request
-# def is_login():
-#     """
-#         1.获取请求头Authorization中的token
-#         2.判断是否以 Bearer开头
-#         3.使用jwt模块进行校验
-#         4.判断校验结果,成功就提取token中的载荷信息,赋值给g对象保存
-#         """
-#     token = request.headers.get('token')
-#     print("token:%s" %token)
-#     if token:
-#         g.username = None
-#         try:
-#             "判断token的校验结果"
-#             payload = jwt.decode(token, SALT, algorithms=['HS256'])
-#             "获取载荷中的信息赋值给g对象"
-#             g.username = payload.get('username')
-#         except exceptions.ExpiredSignatureError:  # 'token已失效'
-#             g.username = 1
-#         except jwt.DecodeError:  # 'token认证失败'
-#             g.username = 2
-#         except jwt.InvalidTokenError:  # '非法的token'
-#             g.username = 3
-#         print("username:%s" %g.username)
-#
-# def verify_jwt(token, secret=None):
-#     """
-#     检验jwt
-#     :param token: jwt
-#     :param secret: 密钥
-#     :return: dict: payload
-#     """
-#     if not secret:
-#         secret = app.config['JWT_SECRET']
-#
-#     try:
-#         payload = jwt.decode(token, secret, algorithms=['HS256'])
-#         return payload
-#     except exceptions.ExpiredSignatureError:  # 'token已失效'
-#         return 1
-#     except jwt.DecodeError:  # 'token认证失败'
-#         return 2
-#     except jwt.InvalidTokenError:  # '非法的token'
-#         return 3
-#
-#
-# def login_required(f):
-#     '让装饰器装饰的函数属性不会变 -- name属性'
-#     '第1种方法,使用functools模块的wraps装饰内部函数'
-#
-#     @functools.wraps(f)
-#     def wrapper(*args, **kwargs):
-#         try:
-#             print("wrapper username:%s" % g.username)
-#             if g.username == 1:
-#                 return {'code': 4001, 'message': 'token已失效'}, 401
-#             elif g.username == 2:
-#                 return {'code': 4001, 'message': 'token认证失败'}, 401
-#             elif g.username == 2:
-#                 return {'code': 4001, 'message': '非法的token'}, 401
-#             else:
-#                 print("这里")
-#                 return f(*args, **kwargs)
-#         except BaseException as e:
-#             return {'code': 4001, 'message': '请先登录认证.'}, 401
-#     return wrapper
+@app.before_request
+def is_login():
+    """
+        1.获取请求头Authorization中的token
+        2.判断是否以 Bearer开头
+        3.使用jwt模块进行校验
+        4.判断校验结果,成功就提取token中的载荷信息,赋值给g对象保存
+        """
+    token = request.headers.get('token')
+    if token:
+        g.username = None
+        try:
+            "判断token的校验结果"
+            payload = jwt.decode(token, SALT, algorithms=['HS256'])
+            "获取载荷中的信息赋值给g对象"
+            g.username = payload.get('username')
+        except exceptions.ExpiredSignatureError:  # 'token已失效'
+            g.username = 1
+        except jwt.DecodeError:  # 'token认证失败'
+            g.username = 2
+        except jwt.InvalidTokenError:  # '非法的token'
+            g.username = 3
+
+def login_required(f):
+    @functools.wraps(f)
+    def wrapper(*args, **kwargs):
+        try:
+            print("wrapper username:%s" % g.username)
+            if g.username == 1:
+                return {'code': 4001, 'message': 'token已失效'}, 401
+            elif g.username == 2:
+                return {'code': 4001, 'message': 'token认证失败'}, 401
+            elif g.username == 2:
+                return {'code': 4001, 'message': '非法的token'}, 401
+            else:
+                return f(*args, **kwargs)
+        except BaseException as e:
+            return {'code': 4001, 'message': '请先登录认证.'}, 401
+    return wrapper
 
 
 @app.route("/homePage_data", methods=['GET'])
-# @login_required
+@login_required
 def get_homePage_Data():
     sql_number_oldPeople = "SELECT COUNT(*) FROM oldperson_info"
     sql_number_gender = "SELECT COUNT(case when oldperson_info.gender='male' then oldperson_info.gender end) as 'male', " \
@@ -246,8 +217,9 @@ def login():
 
 # 获取所有老人信息
 @app.route('/table_oldPerson', methods=['GET'])
-# @login_required
+@login_required
 def get_old_person_info():
+    print("oldpeople")
     result_list = []
     sql = 'SELECT username, profile_photo, id_card, gender, room_number, checkin_date FROM oldPerson_info'
     for result in db.session.execute(sql):
@@ -266,7 +238,7 @@ def get_old_person_info():
 
 # 添加老人信息
 @app.route('/addOldPersonInfo', methods=['POST'])
-# @login_required
+@login_required
 def add_old_person_info():
     body = request.json
     current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -292,7 +264,7 @@ def add_old_person_info():
 
 # 删除老人信息
 @app.route('/deleteOldPerson', methods=['POST'])
-# @login_required
+@login_required
 def delete_old_person():
     body = request.json
     old_person = OldPersonInfo(ID=body['id'], username=body['username'])
@@ -307,7 +279,7 @@ def delete_old_person():
 
 # 修改老人信息
 @app.route('/updateOldPerson', methods=['POST'])
-# @login_required
+@login_required
 def update_old_person():
     body = request.json
     current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -322,7 +294,7 @@ def update_old_person():
 
 # 获取所有义工信息
 @app.route('/table_volunteer', methods=['GET'])
-# @login_required
+@login_required
 def get_volunteer():
     result_list = []
     sql = "SELECT `name`, profile_photo, id_card, gender, phone, ISACTIVE FROM volunteer_info"
@@ -342,7 +314,7 @@ def get_volunteer():
 
 # 添加一个新的义工
 @app.route('/addVolunteer', methods=['POST'])
-# @login_required
+@login_required
 def add_volunteer():
     body = request.json
     current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -367,7 +339,7 @@ def add_volunteer():
 
 # 获取某种类型事件发生的所有记录
 @app.route('/table_events', methods=['GET'])
-# @login_required
+@login_required
 def get_events():
     body = request.json
     result_list = []
@@ -382,7 +354,7 @@ def get_events():
 
 # 老人情感检测数据
 @app.route('/table_facial_expression', methods=['GET'])
-# @login_required
+@login_required
 def get_facial_expression():
     result_list = []
 
@@ -404,7 +376,7 @@ def get_facial_expression():
 
 # 获取区域入侵检测异常数据
 @app.route('/table_instrusion', methods=['GET'])
-# @login_required
+@login_required
 def get_intrusion():
     result_list = []
 
@@ -425,7 +397,7 @@ def get_intrusion():
 
 # 获取老人摔倒检测数据
 @app.route('/table_fall', methods=['GET'])
-# @login_required
+@login_required
 def get_fall():
     result_list = []
 
@@ -446,7 +418,7 @@ def get_fall():
 
 # 获取老人与护工交互检测异常数据
 @app.route('/table_interaction', methods=['GET'])
-# @login_required
+@login_required
 def get_interaction():
     result_list = []
 
@@ -514,9 +486,9 @@ def generate_token(username, password):
     payload = {
         'username': username,
         'password': password,  # 自定义用户ID
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=3600)  # 超时时间
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(days=7)  # 超时时间
     }
-    token = jwt.encode(payload=payload, key=SALT, algorithm="HS256", headers=headers).encode('utf-8').decode('utf-8')
+    token = jwt.encode(payload=payload, key=SALT, algorithm="HS256", headers=headers).decode('utf-8')
     return token
 
 
