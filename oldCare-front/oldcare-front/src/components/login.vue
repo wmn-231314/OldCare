@@ -55,6 +55,8 @@ export default {
     },
     methods:{
         onsubmit(){
+            console.log(this.userInfo.username)
+            console.log(this.userInfo.password)
             let _this = this
             this.$axios.post('/login',  //url
             {
@@ -66,11 +68,14 @@ export default {
                 }
             }).then(function (response){
                 let res = response.data
+                console.log(res.data.token)
                 if(res.code == 200){
+                    // token处理
+                    // var userinfo = res.data
+                    _this.$store.commit('$_setToken',res.data.token)
                     alert("登陆成功！")
-                    _this.$router.push('/home')
+                    _this.$router.push('/home/first')
                 }else{
-                    
                     alert("登陆失败，用户名或密码错误")
                 }
             }).catch(function (error){

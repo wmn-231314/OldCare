@@ -1,48 +1,55 @@
-<!-- 护工信息表 -->
+<!-- 老人护工交互表 -->
 <template>
   <el-table
-    :data="nurseData.filter(data => !search || data.id_card.toLowerCase().includes(search.toLowerCase()))"
+    :data="interactionData.filter(data => !search || ((data.oldPersonId).toString()).toLowerCase().includes(search.toLowerCase()))"
     style="width: 100%" border>
-    <!-- 姓名 -->
+    <!-- 老人姓名 -->
     <el-table-column
       align="center"
       fixed
       width="150"
-      label="姓名"
-      prop="userName">
+      label="老人姓名"
+      prop="oldPersonName">
     </el-table-column>
-    <!-- 身份证号 -->
-    <el-table-column
-      align="center"
-      width="200"
-      label="身份证号"
-      prop="id_card">
-    </el-table-column>
-    <!-- 性别 -->
-    <el-table-column
-      align="center"
-      width="100"
-      label="性别"
-      prop="gender">
-    </el-table-column>
-    <!-- 手机号 -->
+    <!-- 老人id -->
     <el-table-column
       align="center"
       width="150"
-      label="手机号"
-      prop="phone">
+      label="老人id"
+      prop="oldPersonId">
     </el-table-column>
-    <!-- 是否在岗 -->
+    <!-- 护工姓名 -->
     <el-table-column
       align="center"
       width="150"
-      label="是否在岗"
-      prop="is_active">
+      label="护工姓名"
+      prop="volunteerName">
+    </el-table-column>
+    <!-- 护工id -->
+    <el-table-column
+      align="center"
+      width="150"
+      label="护工id"
+      prop="volunteerId">
+    </el-table-column>
+    <!-- 地点 -->
+    <el-table-column
+      align="center"
+      width="150"
+      label="地点"
+      prop="eventLocation">
+    </el-table-column>
+    <!-- 时间 -->
+    <el-table-column
+      align="center"
+      width="150"
+      label="时间"
+      prop="eventDate">
     </el-table-column>
     <!-- 图片 -->
-    <el-table-column prop="photo" label="图片" width="200" align="center">
+    <el-table-column prop="eventPhoto" label="图片" width="200" align="center">
         <template slot-scope="scope">
-            <img :src="scope.row.photo" style="height: 50px"/>
+            <img :src="scope.row.eventPhoto" style="height: 50px"/>
         </template>
     </el-table-column>
     <!-- 搜索 -->
@@ -54,7 +61,7 @@
         <el-input
           v-model="search"
           size="mini"
-          placeholder="请输入身份证号搜索"/>
+          placeholder="请输入老人id搜索"/>
       </template>
     </el-table-column>
   </el-table>
@@ -64,13 +71,13 @@
   export default {
     data() {
       return {
-        nurseData: [],
+        interactionData: [],
         search: ''
       }
     },
         mounted() {
       this.$axios({
-        url:'/home/nurseInformation',
+        url:'/table_interaction',
         method:'get',
         headers: {
           "Access-Control-Allow-Origin": "*",
@@ -78,8 +85,8 @@
         }
       }).then(res => {
         if(res.status==200){
-          if(res.data.code==0){
-            this.nurseData =res.data.data
+          if(res.data.code==200){
+            this.interactionData =res.data.data
           }else if(res.data.code==-1){
             alert("查询失败！")
           }

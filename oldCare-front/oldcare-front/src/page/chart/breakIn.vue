@@ -1,67 +1,76 @@
 <!-- 闯入表 -->
 <template>
-  <div>
-    <div class="list">
-      <!-- 搜索栏 -->
-      <el-form :inline="true" class="demo-form-inline">
-        <el-form-item>
-          <el-input v-model="search" class="search_time" size="mini" placeholder="输入时间查询"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="text" @click="onSearch()" class="el-icon-search">查询</el-button>
-        </el-form-item>
-      </el-form>
-
-      <!-- 表格 -->
-      <el-table
-        :data="needPlanS"
-        style="width: 100%"
-        highlight-current-row
-        border
-        @current-change="handleCurrentsChange"
-      >
-
-        <el-table-column label="地点" prop="customer"></el-table-column>
-
-        <el-table-column label="时间" prop="beginTime"></el-table-column>
-
-        <el-table-column label="图片" prop="username"></el-table-column>
-      </el-table>
-      <!-- 分页 -->
-      <div class="page">
-        <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="currentPage"
-          :page-sizes="[5, 10, 20, 40]"
-          :page-size="pagesize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-        ></el-pagination>
-      </div>
-    </div>
-  </div>
+  <el-table
+    :data="breakInData.filter(data => !search || data.eventLocation.toLowerCase().includes(search.toLowerCase()))"
+    style="width: 100%" border>
+    <!-- 地点 -->
+    <el-table-column
+      align="center"
+      label="地点"
+      prop="eventLocation">
+    </el-table-column>
+    <!-- 时间 -->
+    <el-table-column
+      align="center"
+      label="时间"
+      prop="eventDate">
+    </el-table-column>
+    <!-- 图片 -->
+    <el-table-column prop="eventPhoto" label="图片" align="center">
+        <template slot-scope="scope">
+            <img :src="scope.row.eventPhoto" style="height: 50px"/>
+        </template>
+    </el-table-column>
+    <!-- 搜索 -->
+    <el-table-column
+      align="right">
+      <template slot="header" slot-scope="{}">
+        <el-input
+          v-model="search"
+          size="mini"
+          placeholder="请输入地点搜索"/>
+      </template>
+    </el-table-column>
+  </el-table>
 </template>
 
 <script>
-
+  export default {
+    data() {
+      return {
+       breakInData : [],
+        search: ''
+      }
+    },
+        mounted() {
+      this.$axios({
+        url:'/table_instrusion',
+        method:'get',
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json;charset=utf-8"
+        },
+        params: {
+          eventType: 4 ,}
+      }).then(res => {
+        if(res.status==200){
+          if(res.data.code==200){
+            this.breakInData =res.data.data
+          }else if(res.data.code==-1){
+            alert("查询失败！")
+          }
+        }else{
+          alert(res.data.msg)
+        }
+      })
+    },
+    methods: {
+      handleEdit(index, row) {
+        console.log(index, row);
+      },
+      handleDelete(index, row) {
+        console.log(index, row);
+      }
+    },
+  }
 </script>
-
-<style>
-.el-table-column {
-  text-align: center;
-}
-.list {
-  position: relative;
-}
-
-.popContainer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 500;
-}
-</style>
