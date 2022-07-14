@@ -6,6 +6,8 @@ import base64
 host = "127.0.0.1:9656"
 endpoint = r"/register"
 url = ''.join([host, endpoint])
+with open(r"C:\Users\seven\Desktop\12365.jpg", "rb") as r:
+    photo = bytes.decode(base64.b64encode(r.read()))
 headers = \
     {
         "applicationCode": "detection",
@@ -14,14 +16,12 @@ headers = \
     }
 body = \
     {
-
-        "username": "admin",
-        "password": "admin"
+        'username':'admin',
+        'password':'admin'
 
     }
-
-# r = requests.post("http://127.0.0.1:9656/login", headers=headers, json=body)
-r = requests.get("http://127.0.0.1:9656/homePage_data")
+# r = requests.post("https://f557r67476.goho.co/login", headers=headers, json=body)
+# r = requests.get("http://1.15.63.218/",headers=)
 print(r.text)
 # i=0
 # for item in r.json()['data']:

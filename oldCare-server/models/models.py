@@ -1,4 +1,5 @@
 # coding=utf-8
+
 from app import db
 
 # 老人信息表
