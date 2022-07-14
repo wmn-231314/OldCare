@@ -1,9 +1,8 @@
 <template>
   <div class="home">
     <el-container style="height:100%">
-      <div style="border-right:1px solid #dcdfe6;" :style="height" class="leftm">
+      <div style="border-right:1px solid #dcdfe6;"  class="leftm">
         <el-aside width="200px">
-
           <!-- 整体概况-首页 -->
           <el-menu :default-active="$route.path" style="min-height: 100%;" router>
             <el-menu-item index="/home/first">
@@ -46,14 +45,27 @@
                 </el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-
-            
-
             <!-- 信息采集 -->
-            <el-menu-item index="/home/informationAcquisition">
-              <i class="el-icon-upload"></i>
-              <span slot="title">信息采集</span>
-            </el-menu-item>
+            <el-submenu index="3">
+              <template slot="title">
+                <i class="el-icon-upload"></i>
+                <span>信息采集</span>
+              </template>
+              <!-- 老人信息采集 -->
+              <el-menu-item-group>
+                <el-menu-item index="/home/oldInformationAcquisition">
+                  <i class="el-icon-user-solid"></i>
+                  <span slot="title">老人信息采集</span>
+                </el-menu-item>
+              </el-menu-item-group>
+              <!-- 护工信息采集 -->
+              <el-menu-item-group>
+                <el-menu-item index="/home/volunteerinformationAcquisition">
+                  <i class="el-icon-user"></i>
+                  <span slot="title">护工信息采集</span>
+                </el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
 
             <!-- 老人信息表 -->
             <el-menu-item index="/home/olderInformation">
@@ -62,7 +74,7 @@
             </el-menu-item>
 
             <!-- 护工信息表 -->
-            <el-menu-item index="/home/nurseInformation">
+            <el-menu-item index="/home/volunteerInformation">
               <i class="el-icon-user"></i>
               <span slot="title">护工信息表</span>
             </el-menu-item>
@@ -86,7 +98,7 @@
             </el-menu-item>
 
             <!-- 老人护工交互表 -->
-            <el-menu-item index="/home/olderNurse">
+            <el-menu-item index="/home/olderVolunteer">
               <i class="el-icon-s-order"></i>
               <span slot="title">老人护工交互表</span>
             </el-menu-item>

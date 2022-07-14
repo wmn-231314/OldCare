@@ -16,7 +16,8 @@ import axios from 'axios'
 
 // var axios = require('axios')
 // 配置公共url
-axios.defaults.baseURL = 'https://l4159b2312.imdo.co'
+axios.defaults.baseURL = 'http://1.15.63.218'
+// axios.defaults.baseURL = 'https://f557r67476.goho.co'
 
 Vue.prototype.$axios = axios
 Vue.prototype.$echarts = echarts
@@ -42,39 +43,38 @@ router.beforeEach((to, from, next) => {
   //   next();
   // }
 
-  if (to.fullPath === "/") {
-    if (JSON.parse(localStorage.getItem("islogin"))) {
-      next({
-        path: from.fullPath
-      });
-    } else {
-      next();
-    }
-  }
+  // if (to.fullPath === "/") {
+  //   if (JSON.parse(localStorage.getItem("islogin"))) {
+  //     next({
+  //       path: from.fullPath
+  //     });
+  //   } else {
+  //     next();
+  //   }
+  // }
 
-  if(to.matched.some(m => m.meta.requireAuth)){  // 权限验证
-    if(window.localStorage.token && window.localStorage.isLogin === '1'){
-      next()
-    }else if(to.path !== '/login' && to.path !== '/faceRecognition' && to.path !== '/register'){
-      let token = window.localStorage.token;
-      if(token === 'null' || token === '' || token === undefined){
-        next({path:'/login'})
-        alert("您还未登录，请先登陆后在进行操作！")
-      }else{
-        next()
-      }
-    }else{   // 不需要登录
+  // 权限验证
+  if(to.path !== '/login' && to.path !== '/faceRecognition' && to.path !== '/register'){
+    let token = window.localStorage.token;
+    if(token === 'null' || token === '' || typeof(token) === 'undefined'){
+      next({path:'/login'})
+      alert("您还未登录，请先登陆后在进行操作！")
+    }else{
       next()
     }
+  }else{   // 无需token可访问登陆、注册界面
+    next()
   }
+  
 
 });
 
-// 添加请求拦截器
+// 添加请求拦截器,在请求头中加入token
 axios.interceptors.request.use(
   config => {
     if(store.state.token){
-      config.headers.common['token'] = store.state.token
+      
+      config.headers.common['token'] =  store.state.token
     }
     return config
   },
@@ -92,7 +92,9 @@ axios.interceptors.response.use(
     if(error.response){
       switch(error.response.status){
         case 401:
+          console.log(error.response.data.message)
           localStorage.removeItem('token')
+          alert("您的登陆已过期，请重新登陆！")
           router.replace({
             path: '/login',
             quary:{redirect: router.currentRoute.fullPath} // 登陆成功后跳转入当前浏览页

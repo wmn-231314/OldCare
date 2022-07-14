@@ -13,7 +13,8 @@ module.exports = {
     proxyTable: {
       '/api': {
        
-        target: 'https://l4159b2312.imdo.co',
+        // tarfet:'https://f557r67476.goho.co',
+        target: 'http://1.15.63.218',
         changeOrigin: true,//是否允许跨越
         pathRewrite: {
             '^/api': '',//重写,

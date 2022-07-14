@@ -54,7 +54,7 @@ export default new Vuex.Store({
     getters:{ // 监听数据变化
         getStorage(state){ // 获取本地存储登陆信息
             if(!state.token){
-                state.token = JSON.parse(localStorage.getItem(key))
+                state.token = JSON.parse(localStorage.getItem('token'))
             }
             return state.token
         },
@@ -64,7 +64,7 @@ export default new Vuex.Store({
         $_setToken(state,value){        // 设置存储token
             state.token = value
             localStorage.setItem('token',value)
-            console.log(token)
+            // console.log(token)
         },
         $_removeStorage(state,value){   // 删除token
             localStorage.removeItem('token')

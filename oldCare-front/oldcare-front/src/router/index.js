@@ -19,12 +19,14 @@ import camera4 from '@/page/camera/camera4'
 import breakIn from '@/page/chart/breakIn'
 import emotionRecognition from '@/page/chart/emotionRecognition'
 import fallDetection from '@/page/chart/fallDetection'
-import nurseInformation from '@/page/chart/nurseInformation'
+import volunteerInformation from '@/page/chart/volunteerInformation'
 import olderInformation from '@/page/chart/olderInformation'
-import olderNurse from '@/page/chart/olderNurse'
+import olderVolunteer from '@/page/chart/olderVolunteer'
 // 信息采集页面
-import informationAcquisition from '@/page/view/informationAcquisition'
-import faceInfoCollection from '@/page/view/faceInfoCollection'
+import oldinformationAcquisition from '@/page/information/oldInformationAcquisition'
+import volunteerinformationAcquisition from '@/page/information/volunteerInformationAcquisition'
+import faceAcquisition from '@/page/information/faceAcquisition'
+
 
 
 
@@ -89,11 +91,26 @@ export default new Router({
           meta: { title: '摄像头4' , requireAuth:true}
         },
         // 信息采集
+        // 老人信息采集
         {
-          path: '/home/informationAcquisition',
-          name: 'informationAcquisition',
-          component : informationAcquisition,
-          meta: { title: '信息采集' , requireAuth:true}
+          path: '/home/oldinformationAcquisition',
+          name: 'oldinformationAcquisition',
+          component : oldinformationAcquisition,
+          meta: { title: '老人信息采集' , requireAuth:true}
+        },
+        // 护工信息采集
+        {
+          path: '/home/volunteerinformationAcquisition',
+          name: 'volunteerinformationAcquisition',
+          component : volunteerinformationAcquisition,
+          meta: { title: '护工信息采集' , requireAuth:true}
+        },
+        // 人脸采集
+        {
+          path: '/home/faceAcquisition',
+          name: 'faceAcquisition',
+          component : faceAcquisition,
+          meta: { title: '人脸信息采集' , requireAuth:true}
         },
         // 老人信息表
         {
@@ -104,9 +121,9 @@ export default new Router({
         },
         // 护工信息表
         {
-          path: '/home/nurseInformation',
-          name: 'nurseInformation',
-          component : nurseInformation,
+          path: '/home/volunteerInformation',
+          name: 'volunteerInformation',
+          component : volunteerInformation,
           meta: { title: '护工信息表' , requireAuth:true}
         },
         // 情绪识别表
@@ -132,18 +149,11 @@ export default new Router({
         },
         // 老人护工交互表
         {
-          path: '/home/olderNurse',
-          name: 'olderNurse',
-          component : olderNurse,
+          path: '/home/olderVolunteer',
+          name: 'olderVolunteer',
+          component : olderVolunteer,
           meta: { title: '老人护工交互表' , requireAuth:true}
         },
-        // 人脸信息录入
-        {
-          path: '/home/faceInfoCollection',
-          name: 'faceInfoCollection',
-          component: faceInfoCollection,
-          meta: { title: '人脸信息录入' , requireAuth:true}
-        }
         
       ]
     },
@@ -174,9 +184,48 @@ export default new Router({
       meta:{ requireAuth:true}
     },
     
-    
   ]
-})
+});
+
+// 导航守卫
+// router.beforeEach((to, from, next) => {
+//   // if (to.meta.requireAuth) {
+//   //   if (JSON.parse(localStorage.getItem("islogin"))) {
+//   //     next();
+//   //   } else {
+//   //     next({
+//   //       path: "/"//指向为你的登录界面
+//   //     });
+//   //   }
+//   // } else {
+//   //   next();
+//   // }
+
+//   if (to.fullPath === "/") {
+//     if (JSON.parse(localStorage.getItem("islogin"))) {
+//       next({
+//         path: from.fullPath
+//       });
+//     } else {
+//       next();
+//     }
+//   }
+
+//   // 权限验证
+//   if(to.path !== '/login' && to.path !== '/faceRecognition' && to.path !== '/register'){
+//     let token = window.localStorage.token;
+//     if(token === 'null' || token === '' || typeof(token) === 'undefined'){
+//       next({path:'/login'})
+//       alert("您还未登录，请先登陆后在进行操作！")
+//     }else{
+//       next()
+//     }
+//   }else{   // 无需token可访问登陆、注册界面
+//     next()
+//   }
+  
+
+// });
 
 
 

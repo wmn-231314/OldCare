@@ -9,7 +9,13 @@
       fixed
       width="150"
       label="姓名"
-      prop="userName">
+      prop="username">
+    </el-table-column>
+    <!-- 图片 -->
+    <el-table-column prop="photo" label="图片" width="200" align="center">
+        <template slot-scope="scope">
+            <img :src="scope.row.photo" style="height: 50px"/>
+        </template>
     </el-table-column>
     <!-- 身份证号 -->
     <el-table-column
@@ -39,12 +45,6 @@
       label="入住时间"
       prop="checkin_date">
     </el-table-column>
-    <!-- 图片 -->
-    <el-table-column prop="photo" label="图片" width="200" align="center">
-        <template slot-scope="scope">
-            <img :src="scope.row.photo" style="height: 50px"/>
-        </template>
-    </el-table-column>
     <!-- 搜索 -->
     <el-table-column
       width="200"
@@ -64,16 +64,13 @@
   export default {
     data() {
       return {
-        olderData: [{
-            gender:'nv',
-            checkin_date:'2022-01-04'
-        }],
+        olderData: [],
         search: ''
       }
     },
-        mounted() {
+    mounted() {
       this.$axios({
-        url:'/home/olderInformation',
+        url:'/table_oldPerson',
         method:'get',
         headers: {
           "Access-Control-Allow-Origin": "*",
@@ -81,7 +78,7 @@
         }
       }).then(res => {
         if(res.status==200){
-          if(res.data.code==0){
+          if(res.data.code==200){
             this.olderData =res.data.data
           }else if(res.data.code==-1){
             alert("查询失败！")

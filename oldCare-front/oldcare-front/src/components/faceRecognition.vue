@@ -13,7 +13,7 @@
 <script>
     var imgFace;
     export default{
-        name: 'faceLogin',
+        // name: 'faceLogin',
         mounted(){
             this.camera_open()
             this.faceRec()    
