@@ -10,8 +10,8 @@ from imutils import paths
 from util.facialutil import FaceUtil
 
 # global variable
-dataset_path = '..\\images\\faces'
-output_encoding_file_path = '..\\models_saving\\face_recognition_hog.pickle'
+dataset_path = '../images'
+output_encoding_file_path = '../models_saving/face_recognition_hog.pickle'
 
 # grab the paths to the input images in our dataset
 print("[INFO] quantifying faces...")

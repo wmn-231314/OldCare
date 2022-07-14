@@ -82,8 +82,8 @@ def video_stream():
         video_camera = VideoCamera()
         s = Startingrecording("room")
         s.startStartrecord()
-        # video_camera=Collectingfaces("images","104")
-        # video_camera.startCollect()
+        video_camera=Collectingfaces("images","104")
+        video_camera.startCollect()
 
         # video_camera=Checkingfalldetection("../images/tests/videos/3.mp4")
         # video_camera.startfall()
