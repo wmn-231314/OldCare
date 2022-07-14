@@ -9,42 +9,12 @@
               <i class="el-icon-s-home"></i>
               <span slot="title">整体概况</span>
             </el-menu-item>
-            
+          
             <!-- 监控管理 -->
-            <el-submenu index="2">
-              <template slot="title">
-                <i class="el-icon-video-camera"></i>
-                <span>监控管理</span>
-              </template>
-              <!-- 摄像头1 -->
-              <el-menu-item-group>
-                <el-menu-item index="/home/camera1">
-                  <i class="el-icon-video-camera-solid"></i>
-                  <span slot="title">摄像头1</span>
-                </el-menu-item>
-              </el-menu-item-group>
-              <!-- 摄像头2 -->
-              <el-menu-item-group>
-                <el-menu-item index="/home/camera2">
-                  <i class="el-icon-video-camera-solid"></i>
-                  <span slot="title">摄像头2</span>
-                </el-menu-item>
-              </el-menu-item-group>
-              <!-- 摄像头3 -->
-              <el-menu-item-group>
-                <el-menu-item index="/home/camera3">
-                  <i class="el-icon-video-camera-solid"></i>
-                  <span slot="title">摄像头3</span>
-                </el-menu-item>
-              </el-menu-item-group>
-              <!-- 摄像头4 -->
-            <el-menu-item-group>
-                <el-menu-item index="/home/camera4">
-                  <i class="el-icon-video-camera-solid"></i>
-                  <span slot="title">摄像头4</span>
-                </el-menu-item>
-              </el-menu-item-group>
-            </el-submenu>
+            <el-menu-item index="/home/camera">
+              <i class="el-icon-video-camera"></i>
+              <span slot="title">监控管理</span>
+            </el-menu-item>
             <!-- 信息采集 -->
             <el-submenu index="3">
               <template slot="title">

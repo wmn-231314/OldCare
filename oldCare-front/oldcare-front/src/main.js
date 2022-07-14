@@ -31,31 +31,11 @@ Vue.use(ElementUI)
 Vue.config.productionTip = false
 
 router.beforeEach((to, from, next) => {
-  // if (to.meta.requireAuth) {
-  //   if (JSON.parse(localStorage.getItem("islogin"))) {
-  //     next();
-  //   } else {
-  //     next({
-  //       path: "/"//指向为你的登录界面
-  //     });
-  //   }
-  // } else {
-  //   next();
-  // }
-
-  // if (to.fullPath === "/") {
-  //   if (JSON.parse(localStorage.getItem("islogin"))) {
-  //     next({
-  //       path: from.fullPath
-  //     });
-  //   } else {
-  //     next();
-  //   }
-  // }
 
   // 权限验证
   if(to.path !== '/login' && to.path !== '/faceRecognition' && to.path !== '/register'){
     let token = window.localStorage.token;
+    console.log(token)
     if(token === 'null' || token === '' || typeof(token) === 'undefined'){
       next({path:'/login'})
       alert("您还未登录，请先登陆后在进行操作！")

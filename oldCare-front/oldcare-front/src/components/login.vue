@@ -17,10 +17,10 @@
           </el-input>
         </el-form-item>
         <div class="login-btn">
-            <button @click="onsubmit()">账号密码登陆</button>
+            <el-button @click="onsubmit()">账号密码登陆</el-button>
         </div>
         <div class="login-btn">
-            <button @click="faceLogin()">人脸识别登陆</button>
+            <el-button @click="faceLogin()">人脸识别登陆</el-button>
         </div>
         <el-link type="primary" @click="register()" style="text-align: center;margin-top: 12px;">注册管理员></el-link>
       </el-form>   
@@ -55,8 +55,8 @@ export default {
     },
     methods:{
         onsubmit(){
-            console.log(this.userInfo.username)
-            console.log(this.userInfo.password)
+            // console.log(this.userInfo.username)
+            // console.log(this.userInfo.password)
             let _this = this
             this.$axios.post('/login',  //url
             {
@@ -68,7 +68,7 @@ export default {
                 }
             }).then(function (response){
                 let res = response.data
-                console.log(res.data.token)
+                // console.log(res.data.token)
                 if(res.code == 200){
                     // token处理
                     // var userinfo = res.data

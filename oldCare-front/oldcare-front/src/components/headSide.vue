@@ -33,7 +33,6 @@
 </template>
 
 <script>
-import { MessageBox } from 'element-ui';
 
 
 export default {
@@ -53,23 +52,10 @@ export default {
   },
   created() {},
   methods: {
-    // tologin() {
-    //   this.$router.push({ path: "/" });
-    // },
-    // tozhuce() {
-    //   let flag = false;
-    //   this.$store.commit("login", flag);
-    //   this.$router.push("/");
-    //   console.log("退出登录");
-    // },
     logOut(){
-      MessageBox.confirm(this.lang.logoutTip).then(action => {
-        this.$store.commit('%_removeStorage')
-        this.$router.push('/login')
-        alert(this.lang.logOutSuccess)
-      }).catch(function (error){
-        console.log(error)
-      })
+      this.$store.commit('%_removeStorage')
+      this.$router.push('/login')
+      // alert(this.lang.logOutSuccess)
     },
     handleFullScreen() {
       let element = document.documentElement;
