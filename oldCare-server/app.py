@@ -6,7 +6,7 @@ import jwt
 from flask import Flask, render_template, request, jsonify, session, Response
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import *
-# from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field
 
 import base64
 import time
