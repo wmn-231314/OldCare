@@ -1,8 +1,8 @@
 {
   "name": "work",
   "version": "1.0.0",
-  "description": "A Vue.js project",
-  "author": "guojiayu <2434957426@qq.com>",
+  "description": "oldCare Project",
+  "author": "yanghuang<2630703957@qq.com>",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
