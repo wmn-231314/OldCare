@@ -52,7 +52,7 @@ fall_model = None
 # 循环读取每一帧数据
 while cap.isOpened():
     #返回标记和这一帧数据
-    # ret, frame = cap.read()
+    ret, frame = cap.read()
     (grabbed, frame) = cap.read()
     image = checkingfalldetection(grabbed, frame,fall_model)
     if image is None:
