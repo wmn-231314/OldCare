@@ -26,6 +26,7 @@ from campusher import stream_pusher
 import subprocess as sp
 import multiprocessing
 import psutil
+import base64
 
 f = ""
 
@@ -36,7 +37,7 @@ def __init__(self, filename):
 # 全局变量
 prototxt_file_path = 'D:/SoftwareEngineering/PythonProjects/homework/OldCare/OldCare/oldCare-server/cv/models/mobilenet_ssd/MobileNetSSD_deploy.prototxt'
 model_file_path = 'D:/SoftwareEngineering/PythonProjects/homework/OldCare/OldCare/oldCare-server/cv/models/mobilenet_ssd/MobileNetSSD_deploy.caffemodel'
-output_fence_path = 'D:/SoftwareEngineering/PythonProjects/homework/OldCare/OldCare/oldCare-server/cv/supervision/fence'
+output_fence_path = 'D:\SoftwareEngineering\PythonProjects\homework\OldCare\OldCare\oldCare-server\cv\supervision\\fence\\'
 skip_frames = 30
 # your python path
 python_path = 'D:/SoftwareEngineering/python/python2.7.18/2.7.18'
@@ -88,7 +89,6 @@ totalUp = 0
 fps = FPS().start()
 
 
-# 线程处理
 def check_fence(frame):
     global prototxt_file_path, model_file_path, output_fence_path, skip_frames
     global python_path, minimum_confidence, CLASSES
@@ -188,23 +188,29 @@ def check_fence(frame):
                     event_desc = '有人闯入禁止区域!!!'
                     event_location = 'yard'
                     print('[EVENT] %s, 院子, 有人闯入禁止区域!!!' % (current_time))
-                    snapshot_dir = os.path.join(output_fence_path, 'snapshot_%s.jpg' % (current_time))
-                    cv2.imwrite(snapshot_dir, frame)  # snapshot
-                    #
-                    # # insert into mysql
-                    # url = "http://127.0.0.1:5000/addEvent"
-                    # headers = {"Access-Control-Allow-Origin": "*",
-                    #            "Content-Type": "application/json;charset=utf-8"
-                    #            }
-                    # data = json.dumps(
-                    #     {"eventType": 4, "eventLocation": event_location, "eventDesc": "intrusion",
-                    #      "eventImageDir": snapshot_dir})
-                    # response = requests.post(url=url, data=data, headers=headers).text
-                    #
-                    # # insert into database
-                    # command = '%s inserting.py --event_desc %s --event_type 4 --event_location %s' % (
-                    # python_path, event_desc, event_location)
-                    # p = subprocess.Popen(command, shell=True)
+                    # snapshot_dir = os.path.join(output_fence_path, 'snapshot_1.jpg')
+                    # cv2.imwrite(snapshot_dir, frame)  # snapshot
+                    snapshot_dir = os.path.join(
+                        "D:\SoftwareEngineering\PythonProjects\homework\OldCare\OldCare\oldCare-server\cv\images",
+                        'snapshot_%s.jpg' % current_time)
+                    cv2.imwrite(snapshot_dir, frame)
+                    with open(snapshot_dir, "rb") as r:
+                        photo = bytes.decode(base64.b64encode(r.read()))
+                    headers = \
+                        {
+                            "applicationCode": "detection",
+                            "operationTime": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                            "Content-Type": "application/json;charset=UTF-8"
+                        }
+                    body = \
+                        {
+                            'eventType': 3,
+                            'eventLocation': '院子',
+                            'eventDesc': "有人闯入禁止区域",
+                            'image': photo
+                        }
+                    r = requests.post("http://1.15.63.218/addEventAndPhoto", headers=headers, json=body)
+                    print r.text
 
         trackableObjects[objectID] = to
 
@@ -218,13 +224,13 @@ def check_fence(frame):
     # 界面展示信息
     info = [
         #("Up", totalUp),
-        ("Down", totalDown),
+        #("Down", totalDown),
         ("Status", status),
     ]
 
     # loop over the info tuples and draw them on our frame
-    for (i, (k, v)) in enumerate(info):
-        text = "{}: {}".format(k, v)
+    for (i, k) in enumerate(info):
+        text = "{}".format(k)
         cv2.putText(frame, text, (10, H - ((i * 20) + 20)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
 
@@ -252,6 +258,7 @@ if __name__ == '__main__':
 
     # 加载物体识别模型
     print("[INFO] loading model...")
+
     rtmpUrl = "rtmp://1.15.63.218:1935/live/u3pQJ71N5GWfOIGTdSWXbRLGAwD1IkzuZ5G1pEDzqqm3sncC"
     raw_q = multiprocessing.Queue(100)
 
@@ -295,9 +302,6 @@ if __name__ == '__main__':
             print("下移")
             y1 = y1 + 10
             y2 = y1
-        elif k == ord('t'):
-            print("暂停")
-            cv2.waitKey(0)
         elif k == ord('k'):
             print("增加宽度")
             x2 = x2 + 10
