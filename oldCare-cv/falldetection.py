@@ -8,18 +8,25 @@ python checkingfalldetection.py --filename ../images/tests/videos/3.mp4
 '''
 
 # import the necessary packages
+import base64
+import threading
+
 import imutils
 from keras.models import load_model
 from keras.preprocessing.image import img_to_array
 import numpy as np
 import os
 import argparse
+
+import insertingcontrol
 from campusher import stream_pusher
 from api import SmileApi
 import math
 import cv2
 import time
 import multiprocessing
+
+from inserting import insert
 
 image_api = ''
 result = ''
@@ -253,12 +260,15 @@ def checkingfalldetection(grabbed,image,model=None):
                     event_desc = '走廊, 有人摔倒!!!'
                     event_location = '走廊'
                     print('[EVENT] %s, 走廊, 有人摔倒!!!' % (current_time))
-                    path = os.path.join(output_fall_path, 'fall_%s.jpg' % current_time)
+                    # path = os.path.join(output_fall_path, 'fall_%s.jpg' % current_time)
                     # cv2.imwrite(path, image)
                     # insert into database
                     # command = '%s inserting.py --event_desc %s--event_type3 - -event_location % s'% (python_path, event_desc, event_location)
                     # p = subprocess.Popen(command, shell=True)
-                    # insert(event_desc,2,event_location,'fall_%s.jpg'% current_time)
+                    # image_base = base64.b64encode(image)
+                    ret, jpeg = cv2.imencode('.jpg', image)
+                    image_base = bytes.decode(base64.b64encode(jpeg))
+                    insert(3,event_location,event_desc,image_base,'fall_%s.jpg'% current_time)
     # else:
     #     print("waiting")
     #     # if model is not None:
@@ -281,8 +291,9 @@ def checkingfalldetection(grabbed,image,model=None):
 if __name__ == '__main__':
     # input_video="/home/reed/Desktop/code/oldcare/tests/testfall1.mp4"
     # 初始化摄像头
+    rtmpSrc = "rtmp://1.15.63.218:1935/live/rawvideo"
     if not input_video:
-        vs = cv2.VideoCapture(0)
+        vs = cv2.VideoCapture(rtmpSrc)
         time.sleep(2)
     else:
         vs = cv2.VideoCapture(input_video)
@@ -290,11 +301,11 @@ if __name__ == '__main__':
     # print('[INFO] 开始检测是否有人摔倒...')
     # fall_model = load_model(model_path)
     fall_model = None
+    t5 = threading.Thread(target=insertingcontrol.control)
+    t5.start()
     # 开启线程
     # t1 = threading.Thread(target=run1())
     # t1.start()
-    # t5 = t.Thread(target=insertingcontrol.control)
-    # t5.start()
     # 不断循环
     rtmpUrl = "rtmp://1.15.63.218:1935/live/rfBd56ti2SMtYvSgD5xAV0YU99zampta7Z7S575KLkIZ9PYk"
     raw_q = multiprocessing.Queue(100)
