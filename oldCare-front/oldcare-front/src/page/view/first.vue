@@ -144,6 +144,7 @@ export default {
                 emotion[4]=res.data.data.emotion.neutral
                 emotion[5]=res.data.data.emotion.sadness
                 emotion[6]=res.data.data.emotion.surprise
+                
                 // 摔倒报警
                 fall[0]=res.data.data.fall.within_four_days
                 fall[1]=res.data.data.fall.within_five_days
@@ -155,6 +156,7 @@ export default {
                 fall[7]=res.data.data.fall.within_eleven_days
                 fall[8]=res.data.data.fall.within_twelve_days
                 fall[9]=res.data.data.fall.within_thirteen_days
+                
                 // 闯入
                 breakIn[0]=res.data.data.intrusion.within_four_days
                 breakIn[1]=res.data.data.intrusion.within_five_days
@@ -166,6 +168,7 @@ export default {
                 breakIn[7]=res.data.data.intrusion.within_eleven_days
                 breakIn[8]=res.data.data.intrusion.within_twelve_days
                 breakIn[9]=res.data.data.intrusion.within_thirteen_days
+                
                 // 老人性别比例图
                 genderRateChart.setOption({
                   series:{

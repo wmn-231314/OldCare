@@ -61,13 +61,10 @@ export default new Vuex.Store({
         userName: (state) => state.user_name
     },
     mutations:{
-        $_setToken(state,value){        // 设置存储token
+        $_setToken(state,value){        // 设置存储token，删除token操作在登出方法
             state.token = value
             localStorage.setItem('token',value)
             // console.log(token)
-        },
-        $_removeStorage(state,value){   // 删除token
-            localStorage.removeItem('token')
         },
         handleUsername:(state,value) => {
             state.user_name = value

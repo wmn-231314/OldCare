@@ -119,7 +119,7 @@ export default {
          successResponse => {
          if (successResponse.data.code == 200) {
              alert("成功录入信息！")
-            //  this.$router.push('/home/faceAcquisition')
+             this.$router.push({name:'faceAcquisition',params:{infoType:'vlo',infoId: successResponse.data.data}})
          }else if(successResponse.data.code == 412){
           alert("信息已存在！")
          }

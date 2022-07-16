@@ -11,10 +11,7 @@ import navBar from '@/components/navBar.vue'
 // 首页
 import first from '@/page/view/first'
 // 监控
-import camera1 from '@/page/camera/camera1'
-import camera2 from '@/page/camera/camera2'
-import camera3 from '@/page/camera/camera3'
-import camera4 from '@/page/camera/camera4'
+import camera from '@/page/camera/camera'
 // 表格
 import breakIn from '@/page/chart/breakIn'
 import emotionRecognition from '@/page/chart/emotionRecognition'
@@ -67,28 +64,10 @@ export default new Router({
         },
         // 监控管理
         {
-          path: '/home/camera1',
-          name: 'camera1',
-          component : camera1,
-          meta: { title: '摄像头1' , requireAuth:true}
-        },
-        {
-          path: '/home/camera2',
-          name: 'camera2',
-          component : camera2,
-          meta: { title: '摄像头2' , requireAuth:true}
-        },
-        {
-          path: '/home/camera3',
-          name: 'camera3',
-          component : camera3,
-          meta: { title: '摄像头3' , requireAuth:true}
-        },
-        {
-          path: '/home/camera4',
-          name: 'camera4',
-          component : camera4,
-          meta: { title: '摄像头4' , requireAuth:true}
+          path: '/home/camera',
+          name: 'camera',
+          component : camera,
+          meta: { title: '摄像头' , requireAuth:true}
         },
         // 信息采集
         // 老人信息采集
@@ -186,46 +165,6 @@ export default new Router({
     
   ]
 });
-
-// 导航守卫
-// router.beforeEach((to, from, next) => {
-//   // if (to.meta.requireAuth) {
-//   //   if (JSON.parse(localStorage.getItem("islogin"))) {
-//   //     next();
-//   //   } else {
-//   //     next({
-//   //       path: "/"//指向为你的登录界面
-//   //     });
-//   //   }
-//   // } else {
-//   //   next();
-//   // }
-
-//   if (to.fullPath === "/") {
-//     if (JSON.parse(localStorage.getItem("islogin"))) {
-//       next({
-//         path: from.fullPath
-//       });
-//     } else {
-//       next();
-//     }
-//   }
-
-//   // 权限验证
-//   if(to.path !== '/login' && to.path !== '/faceRecognition' && to.path !== '/register'){
-//     let token = window.localStorage.token;
-//     if(token === 'null' || token === '' || typeof(token) === 'undefined'){
-//       next({path:'/login'})
-//       alert("您还未登录，请先登陆后在进行操作！")
-//     }else{
-//       next()
-//     }
-//   }else{   // 无需token可访问登陆、注册界面
-//     next()
-//   }
-  
-
-// });
 
 
 

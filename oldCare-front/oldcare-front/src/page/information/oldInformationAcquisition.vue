@@ -104,27 +104,31 @@ export default {
     this.$axios
     .post('/addOldPersonInfo',
     {
-      room_number:this.form.roomnum,
-      phone:this.form.phone,
-      checkin_date:this.form.checkin_date,
-      checkout_date:this.form.checkout_date,
-      idCard_photo_base64:this.photo
-     }
-     )
-     .then(
-         successResponse => {
-         if (successResponse.data.code == 200) {
-             alert("成功录入信息！")
-            //  this.$router.push('/home/faceAcquisition')
-         }else if(successResponse.data.code == 412){
-          alert("信息已存在！")
-         }else{
-             console.log(successResponse.data.code );
-             alert("录入信息失败！")
-         }
-     })
-     .catch(failResponse => {
-     })
+        room_number:this.form.roomnum,
+        phone:this.form.phone,
+        checkin_date:this.form.checkin_date,
+        checkout_date:this.form.checkout_date,
+        idCard_photo_base64:this.photo
+        }
+        )
+        .then(
+            successResponse => {
+            if (successResponse.data.code == 200) {
+                // console.log(successResponse.data.data)
+                alert("成功录入信息！")
+                // 获得后端传送id传给下一页面用户类型和用户id
+                this.$router.push({name:'faceAcquisition',params:{infoType:'old',infoId: successResponse.data.data}})
+            }else if(successResponse.data.code == 412){
+            alert("信息已存在！")
+            }else{
+                console.log(successResponse.data.code );
+                alert("录入信息失败！")
+            }
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
+      // this.$router.push('/faceAcquisition')
     },
     cancle(){
       this.$router.push('/home/first')
