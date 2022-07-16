@@ -17,8 +17,8 @@
         </el-form-item>
 
 
-        <el-form-item label="昵称" class="registerla" prop="nickname">
-        <el-input v-model="formRegister.nickname"></el-input>
+        <el-form-item label="确认密码" class="registerla" prop="nickname">
+        <el-input placeholder="请确认密码" v-model="formRegister.nickname" show-password></el-input>
         </el-form-item>
         </el-form>
 
@@ -44,7 +44,7 @@
             {max: 10, message: '不能大于10个字符', trigger: 'blur'}
           ],
           nickname: [
-            {required: true, message: '请输入昵称', trigger: 'blur'},
+            {required: true, message: '请二次输入密码', trigger: 'blur'},
             {max: 10, message: '不能大于10个字符', trigger: 'blur'}
           ],
           password: [
@@ -63,22 +63,23 @@
        this.$router.replace({path:'/'})
      },
      register () {
-
-       this.$axios
-        .post('/login', {
+      if(this.formRegister.password === this.formRegister.nickname){
+        this.$axios.post('/register', {
           username: this.formRegister.username,
           password: this.formRegister.password
-        })
-        .then(successResponse => {
-          this.responseResult = JSON.stringify(successResponse.data)
-          if (successResponse.data.code === 200) {
-            this.$message('注册成功请登陆')
+        }).then(res => {
+          if (res.data.code === 200) {
+            alert('注册成功请登陆!')
+            this.$router.push('/login')
           }
+        }).catch(function (error){
+          console.log(error)
         })
-        .catch(failResponse => {})
-     }
-  
-     
+      }else{
+        alert("两次密码输入不一致!")
+      }
+      
+     }  
    }
  }
 </script>

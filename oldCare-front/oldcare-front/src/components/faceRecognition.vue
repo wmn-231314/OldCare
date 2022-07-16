@@ -4,8 +4,9 @@
         <h2 class="tip"><b>请面向摄像头</b></h2>
         <div class="videos" ref="videos">
             <video id="video_cam" autoplay="autoplay"></video>
-            <canvas id="canvas"></canvas>
+            <canvas id="canvas" height="480px" width="640px"></canvas>
         </div>
+        <button @click="onSubmit()">点击登陆</button>
         <button @click="back()">返回账号密码登陆</button>
     </div>
 </template>
@@ -16,24 +17,25 @@
         // name: 'faceLogin',
         mounted(){
             this.camera_open()
-            this.faceRec()    
+            // this.faceRec()    
         },
+        
         methods:{
             camera_open(){
 
                 var constraints = {
                     video:{
-                        height: 400,
-                        width: 600
+                        height: 480,
+                        width: 640
                     }
                 };
                 // var vio = this.$refs.video;
                 let vio = document.getElementById('video_cam');
-                console.info(vio);
+                // console.info(vio);
                 var promise = navigator.mediaDevices.getUserMedia(constraints);
                 promise.then(
                     (MediaStream) => {
-                        console.info(MediaStream);
+                        // console.info(MediaStream);
                         vio.srcObject = MediaStream;
                         vio.play();
                     }
@@ -44,39 +46,49 @@
                 setTimeout(
                     function(){
                         let canvas = document.getElementById('canvas');
-                        console.info(canvas);
-                        canvas.getContext('2d').drawImage(vio,0,0,640,480);
+                        // console.info(canvas);
+                        canvas.getContext('2d').drawImage(vio,0,0);
+                        
                         // 得到图片，格式base64
-                        imgFace = canvas.toDataURL("image/png");
-                        // imgFace = canvas.subString();
-                        console.info(imgFace);
-                    },1000
-                );
+                        canvas = canvas.toDataURL("image/png");
+                        // console.log(canvas)
+                        // 去掉canvas编码后可能出现的头，只保留编码
+                        imgFace = canvas.replace(/^data:image\/(png|jpg);base64,/,"");
+                        // console.info(imgFace);
+                    },1000);
             }, // camera_open
 
             faceRec(){
                 this.camera_open()
-                this.$axios({
-                    url:'',  //后端有接口后填写
-                    method:'post',
-                    Credentials:"include",
-                    data:{
-                        photo: imgFace // 此处photo根据后端接口名修改
-                    },
-                    headers: {
-                        "Access-Control-Allow-Origin": "*",
-                        "Content-Type": "application/json;charset=utf-8"
-                    }
-                }).then(res => {
-                    if(res.data.code == 200){                      
+    
+                this.$axios.post('/loginWithFace',  //url
+            {
+                photo: imgFace,
+                test:1,
+                headers: {
+                    "Access-Control-Allow-Origin": "*",
+                    "Content-Type": "application/json;charset=utf-8"
+                }
+            })
+                .then(res => {
+                    console.log(res.data)
+                    if(res.data.code == 200){
+                        // token处理
+                        this.$store.commit('$_setToken',res.data.data.token)                      
                         alert("登陆成功，欢迎您")
-                        this.$router.push({path: '/home'})    
+                        this.beforeDestroy()
+                        this.$router.push({path: '/home/first'})   
+                        location.reload() 
                     }else{
                         alert("人脸登陆失败")
                     }
                 }).catch(function (error){
                     console.log(error)
                 })
+            },
+
+            onSubmit(){
+                this.faceRec()
             },
 
             back(){
@@ -105,24 +117,24 @@
     } */
 
     .tip{
-        margin-top: 5%;
+        margin-top: 2%;
         text-align: center;
     }
 
     #video_cam{
         
-        height: 400px;
-        width: 600px;
-        margin-left: 30%;
-        margin-top: 5%;
+        height: 480px;
+        width: 640px;
+        margin-left: 28%;
+        margin-top: 3%;
         align-items: center;
         justify-content: center;
         border: solid 1px;
     }
     
     #canvas{
-        height: 400px;
-        width: 600px;
+        height: 480px;
+        width: 640px;
         display: none;
     }
 

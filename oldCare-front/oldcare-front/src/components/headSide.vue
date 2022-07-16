@@ -53,7 +53,8 @@ export default {
   created() {},
   methods: {
     logOut(){
-      this.$store.commit('%_removeStorage')
+      // 登出则清除token
+      localStorage.removeItem('token')
       this.$router.push('/login')
       // alert(this.lang.logOutSuccess)
     },
